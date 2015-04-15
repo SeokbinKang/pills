@@ -1,0 +1,95 @@
+@charset "utf-8";
+.GraphViewCSS {
+	color: #7a8d02;
+	font-family: carter-one;
+	font-style: normal;
+	font-weight: 400;
+	font-size: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border: 3px solid #B3B3B3;
+	float: left;
+	border-radius: 5px;
+	position: relative;
+	width: 1000px;
+	height: 400px;
+}
+.extent {
+	  fill: #CD5C5C;
+	  fill-opacity: .125;
+	  stroke: #CD5C5C;
+}
+.bardefault {
+	fill :#E6E6FA;
+}
+.barselected {
+
+	fill: #CD5C5C;
+}
+.leftcontrolCSS {
+	width: 400px;
+	float: left;
+	margin-top: 20px;
+	margin-left: 20px;
+	border: 3px double #B3B3B3;
+}
+.middleviewCSS {
+	width: 1000px;
+	height: 1200px;
+	float: left;
+	margin-right: 20px;
+	margin-left: 20px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+.rightcontrolCSS {
+	width: 400px;
+	height: 1200px;
+	float: left;
+	margin-top: 20px;
+	border: 3px double #B3B3B3;
+}
+.headingCSS {
+	color: #2F2F2F;
+	font-family: days-one;
+	font-style: normal;
+	font-weight: 400;
+	font-size: 30px;
+	clear: both;
+	text-align: center;
+	background-color: #9F9F9F;
+	height: 70px;
+	vertical-align: baseline;
+	padding-top: 30px;
+}
+.managingCSS {
+	height: 320px;
+	font-size: 20px;
+}
+.middleheadingCSS {
+	height: 50px;
+	color: #2F2F2F;
+	text-align: center;
+	background-color: #9F9F9F;
+
+	font-size: 30px;
+	border: 3px double #B3B3B3;
+	width: 1000px;
+	vertical-align: middle;
+}
+.GroupItemCSS {
+	height: 200px;
+	border: 2px double #B3B3B3;
+	margin-right: 20px;
+	margin-left: 20px;
+	margin-top: 30px;
+	margin-bottom: 30px;
+}
+.GroupNameCSS {
+	height: 50px;
+	font-family: days-one;
+	font-style: normal;
+	font-weight: 400;
+	font-size: 20px;
+	text-align: center;
+}

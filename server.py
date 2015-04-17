@@ -43,7 +43,7 @@ class Data(Resource):
       drugList = "".join(drugList)
       drugList = map(str, drugList)
 
-    patients, drugStats = dataprocess.process(fileName = 'data.txt', drugList = drugList, overlap = overlap, gap = gap, ageMin = ageMin, ageMax = ageMax)
+    patients, drugStats = dataprocess.process(fileName = 'data/data.txt', drugList = drugList, overlap = overlap, gap = gap, ageMin = ageMin, ageMax = ageMax)
 
     patientsObj = dataprocess.patientsJSON(patients)
     drugsObj = dataprocess.drugsJSON(drugStats, drugList)

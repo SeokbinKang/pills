@@ -43,11 +43,11 @@ echo "\n</script>";
 <script src="/lib/jquery-2.1.1.js"></script>
 <script src="/lib/viz/lib/d3.v3.js" charset="utf-8"></script>
 <script src="/lib/chance.js" charset="utf-8"></script>
-<script src="./pills.js"></script>
+<script src="./js/pills.js"></script>
 <head>
 <meta charset="utf-8">
 <title>Pills v0.2 - Visualization of Drug Prescription Patterns </title>
-<link href="pills.css" rel="stylesheet" type="text/css">
+<link href="./css/pills.css" rel="stylesheet" type="text/css">
 <!--The following script tag downloads a font from the Adobe Edge Web Fonts server for use within the web page. We recommend that you do not modify it.-->
 <script>var __adobewebfontsappname__="dreamweaver"</script>
 <script src="http://use.edgefonts.net/days-one:n4:default;holtwood-one-sc:n4:default.js" type="text/javascript"></script>

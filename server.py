@@ -37,7 +37,7 @@ class Data(Resource):
     if (args['overlap'] is not None):
       overlap = args['overlap']
 
-    drugList = ['41', '42']
+    drugList = ['4', '5']
     if (args['drugList'] is not None):
       drugList = args['drugList']
       drugList = "".join(drugList)

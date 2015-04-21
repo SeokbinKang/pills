@@ -261,13 +261,6 @@ function initialize() {
  createChartDiv('Chart_Bar_MPR_DISTRIBUTION');
  createbarChart(g_data,"Chart_Bar_MPR_DISTRIBUTION", 'new',o_chartoption); 
  
- o_chartoption = createChartOption(1000,400,"CSA","# of Patients",'CSA_DIST');
- createChartDiv('Chart_Bar_CSA_DISTRIBUTION');
- createbarChart(g_data,"Chart_Bar_CSA_DISTRIBUTION", 'new',o_chartoption);
- 
- o_chartoption = createChartOption(1000,400,"CMG","# of Patients",'CMG_DIST');
- createChartDiv('Chart_Bar_CMG_DISTRIBUTION');
- createbarChart(g_data,"Chart_Bar_CMG_DISTRIBUTION", 'new',o_chartoption);
  
  
  o_chartoption = createChartOption(1000,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');
@@ -277,6 +270,16 @@ function initialize() {
  var o_chartoption = createChartOption(1000,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
  createChartDiv('Chart_Scatter_MPR_overMONTH'); 
  createScatterchart(g_data,"Chart_Scatter_MPR_overMONTH", 'new',o_chartoption);
+ 
+ 
+ o_chartoption = createChartOption(1000,400,"CSA","# of Patients",'CSA_DIST');
+ createChartDiv('Chart_Bar_CSA_DISTRIBUTION');
+ createbarChart(g_data,"Chart_Bar_CSA_DISTRIBUTION", 'new',o_chartoption);
+ 
+ o_chartoption = createChartOption(1000,400,"CMG","# of Patients",'CMG_DIST');
+ createChartDiv('Chart_Bar_CMG_DISTRIBUTION');
+ createbarChart(g_data,"Chart_Bar_CMG_DISTRIBUTION", 'new',o_chartoption);
+ 
  //createLinechart(d_mprovertime,"GraphView_Period",'new','all',o_chartoption);
 console.log("initialized\n");
 console.log(g_data);

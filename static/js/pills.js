@@ -46,8 +46,8 @@ function ParseData_MPRRange(data_) {
 	return FrequencyObejct;	   
 }
 
-function createChartOption(w,h,xlabel_,ylabel_){
-	var option = {width:w, height:h, xLabel:xlabel_ , yLabel:ylabel_};
+function createChartOption(w,h,xlabel_,ylabel_,type_){
+	var option = {type : type_,width:w, height:h, xLabel:xlabel_ , yLabel:ylabel_};
 	return option;
 }
 function createFilterOption(mprenabled, mprMin,mprMax){
@@ -68,10 +68,41 @@ function GetData_MPR_over_TIME(patiensIDs) {
 	return MPRt;
 }
    
-function createbarChart(w,h,data_,parentNodeID) {
+
+function createbarChart(data_,parentNodeID,flag, cOption) {
 	var margin = {top: 40, right: 70, bottom: 40, left: 70},
-    width = w - margin.left - margin.right,
-    height = h - margin.top - margin.bottom;
+	 width = cOption.width - margin.left - margin.right,
+    height = cOption.height - margin.top - margin.bottom;
+
+
+	if(cOption.type == 'MPR_DIST') {
+		console.log("sdf");
+		data_=data_.stats.mprRange;
+		xAttr= 'range';
+		yAttr= 'count';
+		xLabel = cOption.xLabel;
+		yLabel = cOption.yLabel;
+			
+	} else if(cOption.type == 'CSA_DIST'){
+		console.log("sdf");
+		data_=data_.stats.csaRange;
+		xAttr= 'range';
+		yAttr= 'count';
+		xLabel = cOption.xLabel;
+		yLabel = cOption.yLabel;
+		
+	} else if(cOption.type == 'CMG_DIST'){
+		console.log("sdf");
+		data_=data_.stats.cmgRange;
+		xAttr= 'range';
+		yAttr= 'count';
+		xLabel = cOption.xLabel;
+		yLabel = cOption.yLabel;
+		
+	} else 	return ;
+
+	console.log(data_);	
+
 
 var x = d3.scale.ordinal()
     .rangeRoundBands([0, width], .1,0.2);
@@ -106,8 +137,8 @@ var brush = d3.svg.brush()
 var maxFrequency=0;
   	
   x.domain(data_.map(function(d) { 
-  if(d.count>maxFrequency) maxFrequency=d.count;
-  return d.range; }));
+  if(d[yAttr]>maxFrequency) maxFrequency=d[yAttr];
+  return d[xAttr]; }));
 //  y.domain([0, d3.max(data_, function(d) { return d.count; })]);
 y.domain([0,maxFrequency+10]);
 svg.append("g")
@@ -120,7 +151,7 @@ svg.append("g")
 	  .attr("x",width+50)
       .style("text-anchor", "end")	
 	  .style("fill","goldenrod") 
-      .text("MPR");
+      .text(xLabel);
 
   svg.append("g")
       .attr("class", "y axis")
@@ -133,20 +164,20 @@ svg.append("g")
       .attr("dy", ".71em")
       .style("text-anchor", "end")	
 	  .style("fill","goldenrod") 
-      .text("Number of Patients");
+      .text(yLabel);
 	  
 
   svg.selectAll(".bar")
       .data(data_)
     .enter().append("rect")
       .attr("class", "bardefault")
-      .attr("x", function(d) { return x(d.range); })
-      .attr("id", function(d) { return "bar"+d.range; })
+      .attr("x", function(d) { return x(d[xAttr]); })
+      .attr("id", function(d) { return "bar"+d[xAttr]; })
       .attr("width", x.rangeBand())
-      .attr("y", function(d) { return y(d.count); })
-      .attr("height", function(d) { return height - y(d.count); })	;
+      .attr("y", function(d) { return y(d[yAttr]); })
+      .attr("height", function(d) { return height - y(d[yAttr]); })	;
 	  
-svg.call(brush);	   
+	svg.call(brush);	   
 // Clear the previously-active brush, if any.
  function brushstart(p) {
    // if (brushCell !== this) {
@@ -447,8 +478,8 @@ function createScatterchart(data_,parentNodeID,flag,dataID,chartOption,Filter){
     .enter().append("circle")
      // .attr("class", "dot")
       .attr("r", 3.5)
-      .attr("cx",function(d, i) { return x_trans(d[1]); })
-      .attr("cy",function(d, i) { return y_trans(d[0]); })
+      .attr("cx",function(d, i) { return x_trans(d.totalPeriod); })
+      .attr("cy",function(d, i) { return y_trans(d.avgMPR); })
 	  .attr("id",function(d,i) { return "dot"+i;})
       .style("fill", '#E6E6FA'); 
 	

@@ -313,6 +313,9 @@ def patientsJSON(patients):
 
         patientsDetails["drug_details"] = drugsList
         patientsDetails["patient_id"] = patientID
+        patientsDetails["gender"] = patient.gender
+        patientsDetails["age"] = patient.age
+        
 
         patientsList.append(patientsDetails)
 
@@ -404,5 +407,5 @@ def printDrugStats(drugStats, drugList):
         print 'MPR:'
         print drugStats[drugID].MPR
 
-printPatients(process('data/data.txt', drugList=['41', '42'], overlap=0, gap=0))
+#printPatients(process('data/data.txt', drugList=['41', '42'], overlap=0, gap=0))
 

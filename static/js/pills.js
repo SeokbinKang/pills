@@ -8,9 +8,9 @@ function Group_CreateGroup(patientIDs,filter) {
 	
 	 var d_mprovertime = GetData_MPR_over_TIME(null);
 	 var o_chartoption = createChartOption(1000,400,"none","none");
-	 createLinechart(d_mprovertime,"GraphView_Time",'appendData',group_numberofGroups,o_chartoption,filter);
+	 //createLinechart(d_mprovertime,"GraphView_Time",'appendData',group_numberofGroups,o_chartoption,filter);
 	 
-	 createScatterchart(d_mprovertime,"GraphView_Period","filter",group_numberofGroups,o_chartoption, filter);
+	// createScatterchart(d_mprovertime,"GraphView_Period","filter",group_numberofGroups,o_chartoption, filter);
 	
 	 AddGrouptoUI('Group '+filter.ID,filter.color,filter);	
 	}
@@ -48,10 +48,10 @@ function createChartOption(w,h,xlabel_,ylabel_,type_){
 	var option = {type : type_,width:w, height:h, xLabel:xlabel_ , yLabel:ylabel_};
 	return option;
 }
-function createFilterOption(mprenabled, mprMin,mprMax){
+function createFilterOption(mprenabled, mprMin,mprMax,filterMeasure_){
 	group_numberofGroups++;
 		var color = d3.scale.category10().domain(d3.range(0,10));
-	var filter_option = { ID:group_numberofGroups ,  MPRFilter : { enabled : mprenabled, minValue : mprMin , maxValue : mprMax} , color : color(group_numberofGroups) };
+	var filter_option = { ID:group_numberofGroups , filterMeasure : filterMeasure_ , MPRFilter : { enabled : mprenabled, minValue : mprMin , maxValue : mprMax} , color : color(group_numberofGroups) };
 	return filter_option;
 }
 function GetData_MPR_over_TIME(patiensIDs) {
@@ -121,7 +121,8 @@ var svg = d3.select("#"+parentNodeID).append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+	.attr("measure",xLabel);
 
 var brush = d3.svg.brush()
       .x(x)
@@ -195,10 +196,10 @@ svg.append("g")
     svg.selectAll("rect").classed("barselected", function(d,i) {
 			var defcolor = false;
 			var rect_x=x(d.range);
-			console.log(i);
+			//console.log(i);
   		   if( e[0][0] < rect_x && e[1][0] > rect_x  ) {
 			  defcolor=true;	 
-			  console.log("selected"); 
+		//	  console.log("selected"); 
 			BarSelected[i]=1;  
 		  } else {
 			  BarSelected[i]=0;
@@ -230,12 +231,15 @@ svg.append("g")
 		
 	}	
 		
-	var newFilter = createFilterOption(true,(min_-mprwidth).toFixed(2),max_.toFixed(2));
-	Group_CreateGroup(null,newFilter);
+	var newFilter = createFilterOption(true,(min_-mprwidth).toFixed(2),max_.toFixed(2),this.getAttribute("measure"));
 	
+	Group_CreateGroup(null,newFilter);
+	console.log(this.getAttribute("measure"));
+	console.log(this);
+	console.log(newFilter);
 	for(i=0;i<BarSelected.length-10;i++){
 		if(BarSelected[i]>0) {
-			console.log(svg);
+		//	console.log(svg);
 			svg.selectAll('.barselected').style("fill", newFilter.color);
 		}
 	}

@@ -46,7 +46,7 @@
        </fieldset>
 	</form>
       </div>      
-      <div class="headingCSS"> General Properties</div>
+      <div class="headingCSS"> Data Filtering</div>
       <div class="managingCSS">
         <form method="post">
         <fieldset>
@@ -65,6 +65,16 @@
                         <input type="checkbox" name="a" value="aa" />ABC <br />
                         <input type="checkbox" name="b" value="bb" />DEF<br />
                         <input type="checkbox" name="c" value="cc" />OPP <br />
+                       
+        </fieldset>
+	</form>
+     <form method="post">
+        <fieldset>
+                <legend><b>Gender</b></legend>
+                <br>
+                        <input type="checkbox" name="a" value="aa" />Male <br />
+                        <input type="checkbox" name="b" value="bb" />Female<br />
+                       
                        
         </fieldset>
 	</form>
@@ -315,7 +325,7 @@ function renewData() {
 	 div_child.style.background=color;
 	 div_.appendChild(div_child);
 	 	 div_.appendChild(div_child2);
-	 div_child2.innerHTML = filter.MPRFilter.minValue + " <= MPR Range <= " +filter.MPRFilter.maxValue;
+	 div_child2.innerHTML = filter.MPRFilter.minValue + " <= "+filter.filterMeasure + " <= " +filter.MPRFilter.maxValue;
 	 grouproot.appendChild(div_);
  }
   </script>

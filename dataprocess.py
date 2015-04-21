@@ -264,7 +264,7 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
 
 def patientsJSON(patients):
     
-    patientsList = {}
+    patientsList = []
     for patientID, patient in patients.items():
 
         patientsDetails = {}
@@ -300,11 +300,12 @@ def patientsJSON(patients):
 
             drugsList.append(drug)
 
-        patientsDetails["drug_details"] = drugsList
-        #patientsDetails["period"] = map(lambda x: [ unix_time_millis(x[0]), unix_time_millis(x[1]), x[2] ], patient.gapOverlap)
-     
 
-        patientsList[patientID] = patientsDetails
+        patientsDetails["drug_details"] = drugsList
+        patientsDetails["patient_id"] = patientID
+
+        patientsList.append(patientsDetails)
+
 
     return patientsList
 

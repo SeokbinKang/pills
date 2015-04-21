@@ -41,7 +41,6 @@ class Data(Resource):
     if (args['drugList'] is not None):
       drugList = args['drugList']
       drugList = "".join(drugList)
-      drugList = map(str, drugList)
 
     patients, drugStats = dataprocess.process(fileName = 'data/data.txt', drugList = drugList, overlap = overlap, gap = gap, ageMin = ageMin, ageMax = ageMax)
 
@@ -57,6 +56,10 @@ api.add_resource(Data, '/data')
 @app.route('/')
 def root():
     return render_template('index.html')
+
+@app.route('/example')
+def example():
+    return render_template('example.html')
 
 
 if __name__ == '__main__':

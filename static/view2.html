@@ -1,134 +1,151 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<script src="libs/jquery-2.1.1.js"></script>
-<script src="libs/d3.v3.js" charset="utf-8"></script>
-<script src="libs/chance.js" charset="utf-8"></script>
-<script src="js/pills.js"></script>
-<head>
-<meta charset="utf-8">
-<title>Pills v0.2 - Visualization of Drug Prescription Patterns </title>
-<link href="css/pills.css" rel="stylesheet" type="text/css">
-<!--The following script tag downloads a font from the Adobe Edge Web Fonts server for use within the web page. We recommend that you do not modify it.-->
-<script>var __adobewebfontsappname__="dreamweaver"</script>
-<script src="http://use.edgefonts.net/days-one:n4:default;holtwood-one-sc:n4:default.js" type="text/javascript"></script>
+  <head>
+    <meta name="generator" content="HTML Tidy for Windows (vers 14 February 2006), see www.w3.org">
+    <script src="libs/jquery-2.1.1.js" type="text/javascript"></script>
+    <script src="libs/d3.v3.js" charset="utf-8" type="text/javascript"></script>
+    <script src="libs/chance.js" charset="utf-8" type="text/javascript"></script>
+    <script src="js/pills.js" type="text/javascript"></script>
+    <script src="http://code.jquery.com/jquery.js" type="text/javascript"></script>
+    <script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <meta charset="utf-8">
+    <title>
+      Pills v0.2 - Visualization of Drug Prescription Patterns
+    </title>
+    <!--The following script tag downloads a font from the Adobe Edge Web Fonts server for use within the web page. We recommend that you do not modify it.-->
 
-</head>
+    <script type="text/javascript">
+var __adobewebfontsappname__="dreamweaver"
+    </script>
+    <script src="http://use.edgefonts.net/days-one:n4:default;holtwood-one-sc:n4:default.js" type="text/javascript"></script>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen" type="text/css">
+	<link href="css/pills.css" rel="stylesheet" type="text/css">
+  </head>
 
-<body>
-   <div class="leftcontrolCSS" id="leftcontrol">
-   <div class="headingCSS"> Data Smoothing</div>
-      <div class="managingCSS"> 
-       <form method="post">
-        <fieldset>
-          <legend><b>Smooth Gaps</b></legend>
-                <p>Any gap whose length is smaller than the threshold is removed so that episodes before and after the gaps form a new episode</p>
-                <p>
-                    <input type="checkbox" name="a" value="aa" />
-                  Enable Filter</p>
-                  	<p class="note">Threshold(days) 
-                  <input id="DF_gaps" type="range" min="0" max="180" step='10' />
-                  <span id="DF_gaps_currentValue">0</span></p>
+  <body>
+  <nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#"></a>
+    </div>
 
-        </fieldset>
-	</form>
-     <form method="post">
-        <fieldset>
-                <legend><b>Smooth Overlaps </b></legend>
-                <p>Any overlap whose length is greater than the threshold is moved/added to the folling episode</p>
-                <br>
-       			   <input type="checkbox" name="a" value="aa" />
-                  Enable Filter</p>
-                  	<p class="note">Threshold(days) 
-                  <input id="DF_overlaps" type="range" min="0" max="180" step='10' />
-                  <span id="DF_overlaps_currentValue">0</span></p>
-                       
-       </fieldset>
-	</form>
-      </div>      
-      <div class="headingCSS"> Data Filtering</div>
-      <div class="managingCSS">
-        <form method="post">
-        <fieldset>
-                <legend><b>Measures</b></legend>
-                <br>
-                        <input type="checkbox" name="a" value="aa" />MPR(Medication Possession Rate) <br />
-                        <input type="checkbox" name="b" value="bb" />CSA(Continuous single-interval medication availability)<br />
-                        <input type="checkbox" name="c" value="cc" />CMG (continuous multiple-interval medication gaps)<br />
-                       
-        </fieldset>
-	</form>
-      <form method="post">
-        <fieldset>
-                <legend><b>Drugs</b></legend>
-                <br>
-                        <input type="checkbox" name="a" value="aa" />ABC <br />
-                        <input type="checkbox" name="b" value="bb" />DEF<br />
-                        <input type="checkbox" name="c" value="cc" />OPP <br />
-                       
-        </fieldset>
-	</form>
-     <form method="post">
-        <fieldset>
-                <legend><b>Gender</b></legend>
-                <br>
-                        <input type="checkbox" name="a" value="aa" />Male <br />
-                        <input type="checkbox" name="b" value="bb" />Female<br />
-                       
-                       
-        </fieldset>
-	</form>
-        <p>&nbsp;</p>
-        <p>&nbsp;</p>
-      </div>
-      <div class="headingCSS"> Data Setting</div>
-      <div class="managingCSS"> 
-       <form method="post">
-        <fieldset>
-                <legend><b>Data Source</b></legend>
-                <br>
-                        <input type="checkbox" name="a" value="aa" />Dataset name 1 (loaded)<br />
-                        <input type="checkbox" name="b" value="bb" />Dataset name 2 (loaded)<br />
-                        <input type="checkbox" name="c" value="cc" />Import a new dataset<br />
-                       
-        </fieldset>
-	</form>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Visualization of Drug Prescription Patterns <span class="sr-only">(current)</span></a></li>
+        <li><a href="#">Help</a></li>   
+		<li><a href="#">Contact us</a></li> 		
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div>
+</nav>
 
-     <form method="post">
-        <fieldset>
-                <legend><b>Preprocessing</b></legend>
-                <br>
-                        <input type="checkbox" name="a" value="aa" />Using raw data<br />
-                        <input type="checkbox" name="b" value="bb" />Preprocessing preset A<br />
-                        <input type="checkbox" name="c" value="cc" />Preprocessign preset B <br />
-                        <input type="checkbox" name="c" value="cc" />Create a new preprocessing prest<br />
-                       
-        </fieldset>
-	</form>
-       </div>
-      
+  <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-3" id="leftcontrol">
+			<div class="panel panel-default">
+				<div class="panel-heading"> Data Filtering</div>
+				<div class="panel-body">
+					<form method="post">
+						<fieldset>
+								<legend><b>Measures</b></legend>
+								<input type="checkbox" name="a" value="aa" />MPR(Medication Possession Rate) <br />
+								<input type="checkbox" name="b" value="bb" />CSA(Continuous single-interval medication availability)<br />
+								<input type="checkbox" name="c" value="cc" />CMG (continuous multiple-interval medication gaps)<br />
+						</fieldset>
+					</form>
+					<form method="post">
+						<fieldset>
+							<legend><b>Drugs</b></legend>
+							<input type="checkbox" name="a" value="aa" />ABC <br />
+							<input type="checkbox" name="b" value="bb" />DEF<br />
+							<input type="checkbox" name="c" value="cc" />OPP <br />   
+						</fieldset>
+					</form>
+					<form method="post">
+						<fieldset>
+							<legend><b>Gender</b></legend>
+							<input type="checkbox" name="a" value="aa" />Male <br />
+							<input type="checkbox" name="b" value="bb" />Female<br />      
+						</fieldset>
+					</form>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading"> Data Smoothing</div>
+				<div class="panel-body"> 
+					<form method="post">
+						<fieldset>
+							<legend><b>Smooth Gaps</b></legend>
+							<p>Any gap whose length is smaller than the threshold is removed so that episodes before and after the gaps form a new episode</p>
+							
+							<!-- <label for="checkbox">
+							<input type="checkbox"  name="a" value="aa" />
+							Enable Filter
+							</label> -->
+							<p class="note">Threshold(days) 
+							<input id="DF_gaps" type="range" min="0" max="180" step='10' />
+							<span id="DF_gaps_currentValue">0</span></p>
+						</fieldset>
+					</form>
+					<form method="post">
+						<fieldset>
+							<legend><b>Smooth Overlaps </b></legend>
+							<p>Any overlap whose length is greater than the threshold is moved/added to the folling episode</p>
+							<!-- <br>
+							<input type="checkbox" name="a" value="aa" />
+							Enable Filter</p> -->
+							<p class="note">Threshold(days) 
+							<input id="DF_overlaps" type="range" min="0" max="180" step='10' />
+							<span id="DF_overlaps_currentValue">0</span></p>          
+						</fieldset>
+					</form>
+				</div>    
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading"> Data Setting</div>
+				<div class="panel-body"> 
+					<form method="post">
+						<fieldset>
+							<legend><b>Data Source</b></legend>
+							<input type="checkbox" name="a" value="aa" />Dataset name 1 (loaded)<br />
+							<input type="checkbox" name="b" value="bb" />Dataset name 2 (loaded)<br />
+							<input type="checkbox" name="c" value="cc" />Import a new dataset<br />
+						</fieldset>
+					</form>
+					<form method="post">
+						<fieldset>
+							<legend><b>Preprocessing</b></legend>
+							<input type="checkbox" name="a" value="aa" />Using raw data<br />
+							<input type="checkbox" name="b" value="bb" />Preprocessing preset A<br />
+							<input type="checkbox" name="c" value="cc" />Preprocessign preset B <br />
+							<input type="checkbox" name="c" value="cc" />Create a new preprocessing prest<br />                   
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
+	
+		<div class="col-md-6 " id="middleview">
+			<div class="panel panel-default">
+				<div class="panel-heading" id="middleHeading">MPR</div>
+			</div>
+		</div>
+		<div class="col-md-3 " id="rightcontrol">
+			<div class="panel panel-default">
+				<div class="panel-heading" > Data Group</div>
+				<div class="managingCSS" id="groups">
+			</div>
+			</div>
+		</div>
+	</div>
 
-   </div>
-<div class="middleviewCSS" id="middleview">
-<div class="middleheadingCSS" id="middleHeading">
-MPR
-</div>
-   
-   </div>
-<div class="rightcontrolCSS" id="rightcontrol">
-  <div class="headingCSS" > Data Group</div>
-  
-      <div class="managingCSS" id="groups">
-     
-      
-      </div>
-      </div>
-
-</div>
-  
- 
-
-</div>
   <script>
   function createChartDiv(id_) {
 	 ("div1");
@@ -329,5 +346,6 @@ function renewData() {
 	 grouproot.appendChild(div_);
  }
   </script>
+</div>
 </body>
 </html>

@@ -7,7 +7,7 @@ function Group_CreateGroup(patientIDs,filter) {
 	if(filter.MPRFilter.enabled) {
 	
 	 var d_mprovertime = GetData_MPR_over_TIME(null);
-	 var o_chartoption = createChartOption(1000,400,"none","none");
+	 var o_chartoption = createChartOption("100%","auto","none","none");
 	 //createLinechart(d_mprovertime,"GraphView_Time",'appendData',group_numberofGroups,o_chartoption,filter);
 	 
 	// createScatterchart(d_mprovertime,"GraphView_Period","filter",group_numberofGroups,o_chartoption, filter);

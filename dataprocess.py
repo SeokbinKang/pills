@@ -106,11 +106,15 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
                 patients[seg[0]].day90[drug]=0
         #TODO: filter by gender, age
         if seg[1] in patients[seg[0]].prscrp:#add prescription
-            startSeg=seg[2].split('/')
-            endSeg=seg[3].split('/')
+            #startSeg=seg[2].split('/')
+            #endSeg=seg[3].split('/')
+            startSeg=seg[2].split('-')
+            endSeg=seg[3].split(' ')[0].split('-')
             dates=[]
-            dates.append(date(string.atoi(startSeg[2]), string.atoi(startSeg[0]), string.atoi(startSeg[1])))
-            dates.append(date(string.atoi(endSeg[2]), string.atoi(endSeg[0]), string.atoi(endSeg[1])))
+            #dates.append(date(string.atoi(startSeg[2]), string.atoi(startSeg[0]), string.atoi(startSeg[1])))
+            #dates.append(date(string.atoi(endSeg[2]), string.atoi(endSeg[0]), string.atoi(endSeg[1])))
+            dates.append(date(string.atoi(startSeg[0]), string.atoi(startSeg[1]), string.atoi(startSeg[2])))
+            dates.append(date(string.atoi(endSeg[0]), string.atoi(endSeg[1]), string.atoi(endSeg[2])))
             if (dates[1]-dates[0]).days==30:
                 patients[seg[0]].day30[seg[1]]+=1
             if (dates[1]-dates[0]).days==90:
@@ -407,5 +411,5 @@ def printDrugStats(drugStats, drugList):
         print 'MPR:'
         print drugStats[drugID].MPR
 
-#printPatients(process('data/data.txt', drugList=['41', '42'], overlap=0, gap=0))
+process('data/sample_data.txt', drugList=['4', '5'], overlap=0, gap=0)
 

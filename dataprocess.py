@@ -1,6 +1,7 @@
 from datetime import *
 import string
 import copy
+import random
 
 import datetime
 
@@ -15,6 +16,8 @@ def unix_time_millis(dt):
 
 class Patient:
     def __init__(self):
+        self.age=0
+        self.gender=0#0 for male, 1 for female
         #prescriptions
         self.prscrp={}
         #period
@@ -74,6 +77,9 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
         seg=line.split('\t')
         if seg[0] not in patients:#add new patient
             patients[seg[0]]=Patient()
+            #random age and gender
+            patients[seg[0]].age=random.randint(0, 100)
+            patients[seg[0]].gender=random.randint(0, 1)
             for drug in drugList:#add drugs
                 patients[seg[0]].prscrp[drug]=[]
                 patients[seg[0]].totalPeriod[drug]=0
@@ -120,6 +126,10 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
                    or (records[len(records)-1][1]>dates[0] and (records[len(records)-1][1]-dates[0]).days<overlap):
                     records[len(records)-1][1]=dates[1]
                 else:
+                    if records[len(records)-1][1]>dates[0] and (records[len(records)-1][1]-dates[0]).days>overlap:
+                        overlapLen=(records[len(records)-1][1]-dates[0]).days
+                        dates[0]=dates[0]+datetime.timedelta(days=overlapLen)
+                        dates[1]=dates[1]+datetime.timedelta(days=overlapLen)
                     patients[seg[0]].prscrp[seg[1]].append(dates)
             else:
                 patients[seg[0]].prscrp[seg[1]].append(dates)
@@ -340,6 +350,8 @@ def drugsJSON(drugStats, drugList):
 def printPatients(patients):
     for patientID, patient in patients.items():
         print patientID
+        print 'Age: '+str(patient.age)
+        print 'Gender: '+str(patient.gender)
         for drugID, drugRecords in patient.prscrp.items():
             print '\t'+str(drugID)
             print '\t\tTotal Period: '+str(patient.totalPeriod[drugID])
@@ -392,5 +404,5 @@ def printDrugStats(drugStats, drugList):
         print 'MPR:'
         print drugStats[drugID].MPR
 
-#printPatients(process('data.txt', drugList=['41', '42'], overlap=0, gap=0))
+printPatients(process('data/data.txt', drugList=['41', '42'], overlap=0, gap=0))
 

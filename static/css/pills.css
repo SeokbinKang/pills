@@ -31,8 +31,7 @@
 	float: left;
 	margin-top: 20px;
 	margin-left: 20px;
-	border-radius: 14px;
-	border: 5px solid #d5d1c9;
+	border: 3px double #B3B3B3;
 }
 .middleviewCSS {
 	width: 1000px;
@@ -51,26 +50,21 @@
 	border: 3px double #B3B3B3;
 }
 .headingCSS {
-	color: #f3d54f;
-	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #2F2F2F;
+	font-family: days-one;
 	font-style: normal;
 	font-weight: 400;
-	font-size: 24px;
+	font-size: 30px;
 	clear: both;
 	text-align: center;
-	background-color: #4d4d4f;
-	height: 40px;
+	background-color: #9F9F9F;
+	height: 70px;
 	vertical-align: baseline;
-	border-radius: 10px 10px 0px 0px;
-	padding-top: 20px;
+	padding-top: 30px;
 }
 .managingCSS {
-	height: 400px;
+	height: 320px;
 	font-size: 20px;
-	background-image: -webkit-linear-gradient(270deg,rgba(253,253,252,1.00) 0%,rgba(232,231,222,1.00) 100%);
-	background-image: -moz-linear-gradient(270deg,rgba(253,253,252,1.00) 0%,rgba(232,231,222,1.00) 100%);
-	background-image: -o-linear-gradient(270deg,rgba(253,253,252,1.00) 0%,rgba(232,231,222,1.00) 100%);
-	background-image: linear-gradient(180deg,rgba(253,253,252,1.00) 0%,rgba(232,231,222,1.00) 100%);
 }
 .middleheadingCSS {
 	height: 50px;
@@ -93,7 +87,7 @@
 }
 .GroupNameCSS {
 	height: 50px;
-	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-family: days-one;
 	font-style: normal;
 	font-weight: 400;
 	font-size: 20px;

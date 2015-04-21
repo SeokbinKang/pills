@@ -74,7 +74,7 @@ echo "\n</script>";
                 <br>
                         <input type="checkbox" name="a" value="aa" />ABC <br />
                         <input type="checkbox" name="b" value="bb" />DEF<br />
-                        <input type="checkbox" name="c" value="cc" />OPP (continuous multiple-interval medication gaps)<br />
+                        <input type="checkbox" name="c" value="cc" />OPP <br />
                        
         </fieldset>
 	</form>

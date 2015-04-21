@@ -7,7 +7,7 @@ function Group_CreateGroup(patientIDs,filter) {
 	if(filter.MPRFilter.enabled) {
 	
 	 var d_mprovertime = GetData_MPR_over_TIME(null);
-	 var o_chartoption = createChartOption(1000,400,"none","none");
+	 var o_chartoption = createChartOption("100%","auto","none","none");
 	 createLinechart(d_mprovertime,"GraphView_Time",'appendData',group_numberofGroups,o_chartoption,filter);
 	 
 	 createScatterchart(d_mprovertime,"GraphView_Period","filter",group_numberofGroups,o_chartoption, filter);
@@ -30,7 +30,7 @@ function ParseData_MPRRange(data_) {
 	  for (i=0;i<Nrange;i++){
 		  Frequency[i]=0;
 	  }
-	  console.log(data_range.length);
+	  
 	  for (i=0;i<data_range.length;i++){
 		  Frequency[data_range[i]]++;		  
 	  }
@@ -40,14 +40,12 @@ function ParseData_MPRRange(data_) {
 	//	item_.count = d;
 		return item_;
 	  });
-	  console.log(Frequency.length);
-	  	  console.log(FrequencyObejct.length);
-		  console.log(FrequencyObejct);
+
 	return FrequencyObejct;	   
 }
 
-function createChartOption(w,h,xlabel_,ylabel_){
-	var option = {width:w, height:h, xLabel:xlabel_ , yLabel:ylabel_};
+function createChartOption(w,h,xlabel_,ylabel_,type_){
+	var option = {type : type_,width:w, height:h, xLabel:xlabel_ , yLabel:ylabel_};
 	return option;
 }
 function createFilterOption(mprenabled, mprMin,mprMax){
@@ -68,10 +66,41 @@ function GetData_MPR_over_TIME(patiensIDs) {
 	return MPRt;
 }
    
-function createbarChart(w,h,data_,parentNodeID) {
-	var margin = {top: 40, right: 70, bottom: 40, left: 70},
-    width = w - margin.left - margin.right,
-    height = h - margin.top - margin.bottom;
+
+function createbarChart(data_,parentNodeID,flag, cOption) {
+	var margin = {top: 40, right: 70, bottom: 80, left: 70},
+	 width = cOption.width - margin.left - margin.right,
+    height = cOption.height - margin.top - margin.bottom;
+
+
+	if(cOption.type == 'MPR_DIST') {
+		
+		data_=data_.stats.mprRange;
+		xAttr= 'range';
+		yAttr= 'count';
+		xLabel = cOption.xLabel;
+		yLabel = cOption.yLabel;
+			
+	} else if(cOption.type == 'CSA_DIST'){
+		
+		data_=data_.stats.csaRange;
+		xAttr= 'range';
+		yAttr= 'count';
+		xLabel = cOption.xLabel;
+		yLabel = cOption.yLabel;
+		
+	} else if(cOption.type == 'CMG_DIST'){
+		
+		data_=data_.stats.cmgRange;
+		xAttr= 'range';
+		yAttr= 'count';
+		xLabel = cOption.xLabel;
+		yLabel = cOption.yLabel;
+		
+	} else 	return ;
+
+
+
 
 var x = d3.scale.ordinal()
     .rangeRoundBands([0, width], .1,0.2);
@@ -106,8 +135,8 @@ var brush = d3.svg.brush()
 var maxFrequency=0;
   	
   x.domain(data_.map(function(d) { 
-  if(d.count>maxFrequency) maxFrequency=d.count;
-  return d.range; }));
+  if(d[yAttr]>maxFrequency) maxFrequency=d[yAttr];
+  return d[xAttr]; }));
 //  y.domain([0, d3.max(data_, function(d) { return d.count; })]);
 y.domain([0,maxFrequency+10]);
 svg.append("g")
@@ -116,11 +145,11 @@ svg.append("g")
       .style("fill","rgb(184, 184, 200)")
       .call(xAxis)
   .append("text")     
-      .attr("y",10)
-	  .attr("x",width+50)
-      .style("text-anchor", "end")	
+      .attr("y",60)
+	  .attr("x",width/2)
+      .style("text-anchor", "middle")	
 	  .style("fill","goldenrod") 
-      .text("MPR");
+      .text(xLabel);
 
   svg.append("g")
       .attr("class", "y axis")
@@ -129,24 +158,24 @@ svg.append("g")
     .append("text")
       //.attr("transform", "rotate(-90)")
       .attr("y",-30)
-	  .attr("x",150)
+	  .attr("x",-40)
       .attr("dy", ".71em")
-      .style("text-anchor", "end")	
+      .style("text-anchor", "start")	
 	  .style("fill","goldenrod") 
-      .text("Number of Patients");
+      .text(yLabel);
 	  
 
   svg.selectAll(".bar")
       .data(data_)
     .enter().append("rect")
       .attr("class", "bardefault")
-      .attr("x", function(d) { return x(d.range); })
-      .attr("id", function(d) { return "bar"+d.range; })
+      .attr("x", function(d) { return x(d[xAttr]); })
+      .attr("id", function(d) { return "bar"+d[xAttr]; })
       .attr("width", x.rangeBand())
-      .attr("y", function(d) { return y(d.count); })
-      .attr("height", function(d) { return height - y(d.count); })	;
+      .attr("y", function(d) { return y(d[yAttr]); })
+      .attr("height", function(d) { return height - y(d[yAttr]); })	;
 	  
-svg.call(brush);	   
+	svg.call(brush);	   
 // Clear the previously-active brush, if any.
  function brushstart(p) {
    // if (brushCell !== this) {
@@ -223,18 +252,32 @@ function type(d) {
 
 /*****line chart ******/
 
-function createLinechart(data_,parentNodeID,flag,dataID,chartOption,filter){
+function createLinechart(data_o,parentNodeID,flag,chartOption){
 	
-	
+
 	var color = d3.scale.category10().domain(d3.range(0,10));
 	//color.domain([0, 10]);
-	console.log(chartOption.width);
-	var margin = {top: 40, right: 70, bottom: 40, left: 70},
+
+	var margin = {top: 40, right: 70, bottom: 80, left: 70},
     width = chartOption.width - margin.left - margin.right,
     height = chartOption.height - margin.top - margin.bottom;
-	console.log(width);
+
+	
+	 if(chartOption.type == 'MPR_over_MONTH'){
+		data_=data_o.stats.mpr30;
+		xAttr= 'i';
+		yAttr= 'avg';
+		xLabel = chartOption.xLabel;
+		yLabel = chartOption.yLabel;
+		dataID = data_o.name;
+		color_ = data_o.color;
+		
+	} else 	return ;
+	
+	
+	
 	var x_trans = d3.scale.linear()
-    .domain([0, 100 ])
+    .domain([0, data_.length ])
     .range([0, width]);
  
 	var y_trans = d3.scale.linear()
@@ -249,6 +292,7 @@ function createLinechart(data_,parentNodeID,flag,dataID,chartOption,filter){
     .scale(y_trans)
     .orient("left")
     .ticks(10, "d");
+	
 	if(flag=='appendData') {
 		console.log("#"+parentNodeID+"_svg"+" g"); 
 		var svg = d3.select("#"+parentNodeID+"_svg"+" g");
@@ -290,11 +334,11 @@ function createLinechart(data_,parentNodeID,flag,dataID,chartOption,filter){
       .style("fill","rgb(184, 184, 200)")
       .call(xAxis)
   .append("text")     
-      .attr("y",10)
-	  .attr("x",width+60)
-      .style("text-anchor", "end")	
+      .attr("y",50)
+	  .attr("x",width/2)
+      .style("text-anchor", "middle")	
 	  .style("fill","goldenrod") 
-      .text(chartOption.xLabel);
+      .text(xLabel);
 	 
 	svg.append("g")
       .attr("class", "y axis")
@@ -303,16 +347,16 @@ function createLinechart(data_,parentNodeID,flag,dataID,chartOption,filter){
     .append("text")
       //.attr("transform", "rotate(-90)")
       .attr("y",-30)
-	  .attr("x",25)
+	  .attr("x",-20)
       .attr("dy", ".71em")
-      .style("text-anchor", "end")	
+      .style("text-anchor", "start")	
 	  .style("fill","goldenrod") 
-      .text(chartOption.yLabel); 
+      .text(yLabel); 
 
 	
 var line = d3.svg.line()
     .x(function(d, i) { return x_trans(i); })
-    .y(function(d, i) { return y_trans(d);;})
+    .y(function(d, i) { return y_trans(d[yAttr]);;})
 	.interpolate("basis");
 	;
 	
@@ -322,7 +366,7 @@ var path = svg.append("g")
 	    .datum(data_)
 	    .attr("d", line)
 		.style("fill", "none")
-		.style("stroke",'#E6E6FA')
+		.style("stroke",color_)
 		.style("stroke-width",3);
 	//	.style("visibility", show);	
 	return path;
@@ -333,18 +377,18 @@ var path = svg.append("g")
 }
 
 
-function createScatterchart(data_,parentNodeID,flag,dataID,chartOption,Filter){
+function createScatterchart(data_o,parentNodeID,flag,chartOption){
 	
 	
 	var color = d3.scale.category10().domain(d3.range(0,10));
 	//color.domain([0, 10]);
 
-	var margin = {top: 40, right: 70, bottom: 40, left: 70},
+	var margin = {top: 40, right: 70, bottom: 80, left: 70},
     width = chartOption.width - margin.left - margin.right,
     height = chartOption.height - margin.top - margin.bottom;
 	
 	var x_trans = d3.scale.linear()
-    .domain([0, 720 ])
+    .domain([0, 780 ])
     .range([0, width]);
  
 	var y_trans = d3.scale.linear()
@@ -359,6 +403,18 @@ function createScatterchart(data_,parentNodeID,flag,dataID,chartOption,Filter){
     .scale(y_trans)
     .orient("left")
     .ticks(10, "d");
+	
+	 if(chartOption.type == 'MPR_over_TotalPeriod'){
+		data_=data_o.patientData;
+		xAttr= 'totalPeriod';
+		yAttr= 'avgMPR';
+		xLabel = chartOption.xLabel;
+		yLabel = chartOption.yLabel;
+		dataID = data_o.name;
+		color_ = data_o.color;
+		
+	} else 	return ;
+	
 	if(flag=='filter') {
 		console.log("#"+parentNodeID+"_svg"+" g"); 
 		var svg = d3.select("#"+parentNodeID+"_svg"+" g");
@@ -423,11 +479,11 @@ function createScatterchart(data_,parentNodeID,flag,dataID,chartOption,Filter){
       .style("fill","rgb(184, 184, 200)")
       .call(xAxis)
   .append("text")     
-      .attr("y",10)
-	  .attr("x",width+65)
-      .style("text-anchor", "end")	
+      .attr("y",60)
+	  .attr("x",width/2-100)
+      .style("text-anchor", "center")	
 	  .style("fill","goldenrod") 
-      .text(chartOption.xLabel);
+      .text(xLabel);
 	 
 	svg.append("g")
       .attr("class", "y axis")
@@ -436,19 +492,21 @@ function createScatterchart(data_,parentNodeID,flag,dataID,chartOption,Filter){
     .append("text")
       //.attr("transform", "rotate(-90)")
       .attr("y",-30)
-	  .attr("x",25)
+	  .attr("x",0)
       .attr("dy", ".71em")
-      .style("text-anchor", "end")	
+      .style("text-anchor", "start")	
 	  .style("fill","goldenrod") 
-      .text(chartOption.yLabel); 
-	
+      .text(yLabel); 
+	  console.log(xAttr);
+	  console.log(yAttr);
+	console.log(data_);
  svg.selectAll(".dot")
       .data(data_)
     .enter().append("circle")
      // .attr("class", "dot")
       .attr("r", 3.5)
-      .attr("cx",function(d, i) { return x_trans(d[1]); })
-      .attr("cy",function(d, i) { return y_trans(d[0]); })
+      .attr("cx",function(d, i) { return x_trans(d[xAttr]); })
+      .attr("cy",function(d, i) { return y_trans(d[yAttr]); })
 	  .attr("id",function(d,i) { return "dot"+i;})
       .style("fill", '#E6E6FA'); 
 	

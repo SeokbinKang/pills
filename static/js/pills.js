@@ -30,7 +30,7 @@ function ParseData_MPRRange(data_) {
 	  for (i=0;i<Nrange;i++){
 		  Frequency[i]=0;
 	  }
-	  console.log(data_range.length);
+	  
 	  for (i=0;i<data_range.length;i++){
 		  Frequency[data_range[i]]++;		  
 	  }
@@ -40,9 +40,7 @@ function ParseData_MPRRange(data_) {
 	//	item_.count = d;
 		return item_;
 	  });
-	  console.log(Frequency.length);
-	  	  console.log(FrequencyObejct.length);
-		  console.log(FrequencyObejct);
+
 	return FrequencyObejct;	   
 }
 
@@ -70,13 +68,13 @@ function GetData_MPR_over_TIME(patiensIDs) {
    
 
 function createbarChart(data_,parentNodeID,flag, cOption) {
-	var margin = {top: 40, right: 70, bottom: 40, left: 70},
+	var margin = {top: 40, right: 70, bottom: 80, left: 70},
 	 width = cOption.width - margin.left - margin.right,
     height = cOption.height - margin.top - margin.bottom;
 
 
 	if(cOption.type == 'MPR_DIST') {
-		console.log("sdf");
+		
 		data_=data_.stats.mprRange;
 		xAttr= 'range';
 		yAttr= 'count';
@@ -84,7 +82,7 @@ function createbarChart(data_,parentNodeID,flag, cOption) {
 		yLabel = cOption.yLabel;
 			
 	} else if(cOption.type == 'CSA_DIST'){
-		console.log("sdf");
+		
 		data_=data_.stats.csaRange;
 		xAttr= 'range';
 		yAttr= 'count';
@@ -92,7 +90,7 @@ function createbarChart(data_,parentNodeID,flag, cOption) {
 		yLabel = cOption.yLabel;
 		
 	} else if(cOption.type == 'CMG_DIST'){
-		console.log("sdf");
+		
 		data_=data_.stats.cmgRange;
 		xAttr= 'range';
 		yAttr= 'count';
@@ -101,7 +99,7 @@ function createbarChart(data_,parentNodeID,flag, cOption) {
 		
 	} else 	return ;
 
-	console.log(data_);	
+
 
 
 var x = d3.scale.ordinal()
@@ -147,9 +145,9 @@ svg.append("g")
       .style("fill","rgb(184, 184, 200)")
       .call(xAxis)
   .append("text")     
-      .attr("y",10)
-	  .attr("x",width+50)
-      .style("text-anchor", "end")	
+      .attr("y",60)
+	  .attr("x",width/2)
+      .style("text-anchor", "middle")	
 	  .style("fill","goldenrod") 
       .text(xLabel);
 
@@ -160,9 +158,9 @@ svg.append("g")
     .append("text")
       //.attr("transform", "rotate(-90)")
       .attr("y",-30)
-	  .attr("x",150)
+	  .attr("x",-40)
       .attr("dy", ".71em")
-      .style("text-anchor", "end")	
+      .style("text-anchor", "start")	
 	  .style("fill","goldenrod") 
       .text(yLabel);
 	  
@@ -254,18 +252,32 @@ function type(d) {
 
 /*****line chart ******/
 
-function createLinechart(data_,parentNodeID,flag,dataID,chartOption,filter){
+function createLinechart(data_o,parentNodeID,flag,chartOption){
 	
-	
+
 	var color = d3.scale.category10().domain(d3.range(0,10));
 	//color.domain([0, 10]);
-	console.log(chartOption.width);
-	var margin = {top: 40, right: 70, bottom: 40, left: 70},
+
+	var margin = {top: 40, right: 70, bottom: 80, left: 70},
     width = chartOption.width - margin.left - margin.right,
     height = chartOption.height - margin.top - margin.bottom;
-	console.log(width);
+
+	
+	 if(chartOption.type == 'MPR_over_MONTH'){
+		data_=data_o.stats.mpr30;
+		xAttr= 'i';
+		yAttr= 'avg';
+		xLabel = chartOption.xLabel;
+		yLabel = chartOption.yLabel;
+		dataID = data_o.name;
+		color_ = data_o.color;
+		
+	} else 	return ;
+	
+	
+	
 	var x_trans = d3.scale.linear()
-    .domain([0, 100 ])
+    .domain([0, data_.length ])
     .range([0, width]);
  
 	var y_trans = d3.scale.linear()
@@ -280,6 +292,7 @@ function createLinechart(data_,parentNodeID,flag,dataID,chartOption,filter){
     .scale(y_trans)
     .orient("left")
     .ticks(10, "d");
+	
 	if(flag=='appendData') {
 		console.log("#"+parentNodeID+"_svg"+" g"); 
 		var svg = d3.select("#"+parentNodeID+"_svg"+" g");
@@ -321,11 +334,11 @@ function createLinechart(data_,parentNodeID,flag,dataID,chartOption,filter){
       .style("fill","rgb(184, 184, 200)")
       .call(xAxis)
   .append("text")     
-      .attr("y",10)
-	  .attr("x",width+60)
-      .style("text-anchor", "end")	
+      .attr("y",50)
+	  .attr("x",width/2)
+      .style("text-anchor", "middle")	
 	  .style("fill","goldenrod") 
-      .text(chartOption.xLabel);
+      .text(xLabel);
 	 
 	svg.append("g")
       .attr("class", "y axis")
@@ -334,16 +347,16 @@ function createLinechart(data_,parentNodeID,flag,dataID,chartOption,filter){
     .append("text")
       //.attr("transform", "rotate(-90)")
       .attr("y",-30)
-	  .attr("x",25)
+	  .attr("x",-20)
       .attr("dy", ".71em")
-      .style("text-anchor", "end")	
+      .style("text-anchor", "start")	
 	  .style("fill","goldenrod") 
-      .text(chartOption.yLabel); 
+      .text(yLabel); 
 
 	
 var line = d3.svg.line()
     .x(function(d, i) { return x_trans(i); })
-    .y(function(d, i) { return y_trans(d);;})
+    .y(function(d, i) { return y_trans(d[yAttr]);;})
 	.interpolate("basis");
 	;
 	
@@ -353,7 +366,7 @@ var path = svg.append("g")
 	    .datum(data_)
 	    .attr("d", line)
 		.style("fill", "none")
-		.style("stroke",'#E6E6FA')
+		.style("stroke",color_)
 		.style("stroke-width",3);
 	//	.style("visibility", show);	
 	return path;
@@ -364,18 +377,18 @@ var path = svg.append("g")
 }
 
 
-function createScatterchart(data_,parentNodeID,flag,dataID,chartOption,Filter){
+function createScatterchart(data_o,parentNodeID,flag,chartOption){
 	
 	
 	var color = d3.scale.category10().domain(d3.range(0,10));
 	//color.domain([0, 10]);
 
-	var margin = {top: 40, right: 70, bottom: 40, left: 70},
+	var margin = {top: 40, right: 70, bottom: 80, left: 70},
     width = chartOption.width - margin.left - margin.right,
     height = chartOption.height - margin.top - margin.bottom;
 	
 	var x_trans = d3.scale.linear()
-    .domain([0, 720 ])
+    .domain([0, 780 ])
     .range([0, width]);
  
 	var y_trans = d3.scale.linear()
@@ -390,6 +403,18 @@ function createScatterchart(data_,parentNodeID,flag,dataID,chartOption,Filter){
     .scale(y_trans)
     .orient("left")
     .ticks(10, "d");
+	
+	 if(chartOption.type == 'MPR_over_TotalPeriod'){
+		data_=data_o.patientData;
+		xAttr= 'totalPeriod';
+		yAttr= 'avgMPR';
+		xLabel = chartOption.xLabel;
+		yLabel = chartOption.yLabel;
+		dataID = data_o.name;
+		color_ = data_o.color;
+		
+	} else 	return ;
+	
 	if(flag=='filter') {
 		console.log("#"+parentNodeID+"_svg"+" g"); 
 		var svg = d3.select("#"+parentNodeID+"_svg"+" g");
@@ -454,11 +479,11 @@ function createScatterchart(data_,parentNodeID,flag,dataID,chartOption,Filter){
       .style("fill","rgb(184, 184, 200)")
       .call(xAxis)
   .append("text")     
-      .attr("y",10)
-	  .attr("x",width+65)
-      .style("text-anchor", "end")	
+      .attr("y",60)
+	  .attr("x",width/2-100)
+      .style("text-anchor", "center")	
 	  .style("fill","goldenrod") 
-      .text(chartOption.xLabel);
+      .text(xLabel);
 	 
 	svg.append("g")
       .attr("class", "y axis")
@@ -467,19 +492,21 @@ function createScatterchart(data_,parentNodeID,flag,dataID,chartOption,Filter){
     .append("text")
       //.attr("transform", "rotate(-90)")
       .attr("y",-30)
-	  .attr("x",25)
+	  .attr("x",0)
       .attr("dy", ".71em")
-      .style("text-anchor", "end")	
+      .style("text-anchor", "start")	
 	  .style("fill","goldenrod") 
-      .text(chartOption.yLabel); 
-	
+      .text(yLabel); 
+	  console.log(xAttr);
+	  console.log(yAttr);
+	console.log(data_);
  svg.selectAll(".dot")
       .data(data_)
     .enter().append("circle")
      // .attr("class", "dot")
       .attr("r", 3.5)
-      .attr("cx",function(d, i) { return x_trans(d.totalPeriod); })
-      .attr("cy",function(d, i) { return y_trans(d.avgMPR); })
+      .attr("cx",function(d, i) { return x_trans(d[xAttr]); })
+      .attr("cy",function(d, i) { return y_trans(d[yAttr]); })
 	  .attr("id",function(d,i) { return "dot"+i;})
       .style("fill", '#E6E6FA'); 
 	

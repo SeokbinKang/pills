@@ -137,19 +137,19 @@ $.getJSON('/data', function(data) {
   
 function createPatientGroup(name_,color_)
 {
-	var g = {name : name_, color : color_, stats : {mprRange : [] , csaRange : [] , cmgRange : []}, patientData : [] };
+	var g = {name : name_, color : color_, stats : {mprRange : [] , csaRange : [] , cmgRange : [], mpr30 : []}, patientData : [] };
 	return g;
 }
-function constructInitData() {
-   g_data = createPatientGroup("default",'#E6E6FA');
+function constructInitData(data) {
+
 
 
    var Nrange=20;  //MPR range count
 	
   for (i=0;i<Nrange;i++){
-     g_data.stats.mprRange[i]={range : 0 , count : 0};
-     g_data.stats.csaRange[i]={range : 0 , count : 0};
-     g_data.stats.cmgRange[i]={range : 0 , count : 0};
+    data.stats.mprRange[i]={range : 0 , count : 0};
+     data.stats.csaRange[i]={range : 0 , count : 0};
+     data.stats.cmgRange[i]={range : 0 , count : 0};
   }
   for (i = 0; i < g_rawdata.patients.length; i++) { 
   
@@ -167,36 +167,52 @@ function constructInitData() {
 		if(drugIndex==-1) continue;
 		
 		//patient data
-		g_data.patientData[i] = new Object();
-   		g_data.patientData[i].id = p.patient_id;		
-		g_data.patientData[i].avgMPR = p.drug_details[drugIndex].mpr.toFixed(4);
-		g_data.patientData[i].totalPeriod = p.drug_details[drugIndex].total_period;
+		data.patientData[i] = new Object();
+   		data.patientData[i].id = p.patient_id;		
+		data.patientData[i].avgMPR = p.drug_details[drugIndex].mpr.toFixed(4);
+		data.patientData[i].totalPeriod = p.drug_details[drugIndex].total_period;
   		
   		//statistical data
-		ival = (g_data.patientData[i].avgMPR*Nrange) | 0; // range index
+		ival = (data.patientData[i].avgMPR*Nrange) | 0; // range index
 		if(ival>=Nrange) ival = Nrange-1;
-		g_data.stats.mprRange[ival].range = ival/Nrange
-		g_data.stats.mprRange[ival].count++;
+		data.stats.mprRange[ival].range = ival/Nrange
+		data.stats.mprRange[ival].count++;
 		
 		
 		//csa
 		ival = (p.drug_details[drugIndex].average_csa * Nrange) | 0;
 		if(ival>=Nrange) ival = Nrange-1;
-		g_data.stats.csaRange[ival].range = ival/Nrange
-		g_data.stats.csaRange[ival].count++;
+		data.stats.csaRange[ival].range = ival/Nrange
+		data.stats.csaRange[ival].count++;
 		
 		//cmg
 		ival = (p.drug_details[drugIndex].avg_cmg * Nrange) | 0;
 		if(ival>=Nrange) ival = Nrange-1;
-		g_data.stats.cmgRange[ival].range = ival/Nrange
-		g_data.stats.cmgRange[ival].count++;
+		data.stats.cmgRange[ival].range = ival/Nrange
+		data.stats.cmgRange[ival].count++;
 		
+		//mpr30
+		
+		for(mpr30index =0; mpr30index < p.drug_details[drugIndex].mpr_30.length-1;mpr30index++)
+		{
+			if(data.stats.mpr30[mpr30index] == undefined) {
+				data.stats.mpr30[mpr30index] = {count : 0 , value : 0 , avg:0 };
+			} 
+			data.stats.mpr30[mpr30index].count++;
+			data.stats.mpr30[mpr30index].value +=  p.drug_details[drugIndex].mpr_30[mpr30index];
+			
+		}		
   
   }	
+	for(j =0; j<data.stats.mpr30.length;j++)
+	{
+		data.stats.mpr30[j].avg = data.stats.mpr30[j].value / data.stats.mpr30[j].count;
+	}
+  return data;
 }
 function initialize() {
-	
-	constructInitData();
+	g_data = createPatientGroup("default",'#E6E6FA');
+	g_data = constructInitData(g_data);
 	console.log(g_data);
   //construct g_data;
 
@@ -208,24 +224,25 @@ function initialize() {
  // var d_mprovertime = GetData_MPR_over_TIME(null);
  
  var o_chartoption = createChartOption(1000,400,"MPR","# of Patients",'MPR_DIST');
- createChartDiv('Chart_MPR_DISTRIBUTION');
- createbarChart(g_data,"Chart_MPR_DISTRIBUTION", 'new',o_chartoption); 
+ createChartDiv('Chart_Bar_MPR_DISTRIBUTION');
+ createbarChart(g_data,"Chart_Bar_MPR_DISTRIBUTION", 'new',o_chartoption); 
  
  o_chartoption = createChartOption(1000,400,"CSA","# of Patients",'CSA_DIST');
- createChartDiv('Chart_CSA_DISTRIBUTION');
- createbarChart(g_data,"Chart_CSA_DISTRIBUTION", 'new',o_chartoption);
+ createChartDiv('Chart_Bar_CSA_DISTRIBUTION');
+ createbarChart(g_data,"Chart_Bar_CSA_DISTRIBUTION", 'new',o_chartoption);
  
  o_chartoption = createChartOption(1000,400,"CMG","# of Patients",'CMG_DIST');
- createChartDiv('Chart_CMG_DISTRIBUTION');
- createbarChart(g_data,"Chart_CMG_DISTRIBUTION", 'new',o_chartoption);
+ createChartDiv('Chart_Bar_CMG_DISTRIBUTION');
+ createbarChart(g_data,"Chart_Bar_CMG_DISTRIBUTION", 'new',o_chartoption);
  
  
+ o_chartoption = createChartOption(1000,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');
+ createChartDiv('Chart_Line_MPR_overMONTH');  
+ createLinechart(g_data,"Chart_Line_MPR_overMONTH",'new',o_chartoption);
  
- 
- 
-// createLinechart(d_mprovertime,"GraphView_Time",'new','all',o_chartoption);
-  var o_chartoption = createChartOption(1000,400,"Total Medicayion Period","MPR");
-  createScatterchart(g_data.patientData,"GraphView_Period", 'new','all',o_chartoption);
+ var o_chartoption = createChartOption(1000,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
+ createChartDiv('Chart_Scatter_MPR_overMONTH'); 
+ createScatterchart(g_data,"Chart_Scatter_MPR_overMONTH", 'new',o_chartoption);
  //createLinechart(d_mprovertime,"GraphView_Period",'new','all',o_chartoption);
 
 // 

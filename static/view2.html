@@ -92,7 +92,7 @@ var __adobewebfontsappname__="dreamweaver"
 							Enable Filter
 							</label> -->
 							<p class="note">Threshold(days) 
-							<input id="DF_gaps" type="range" min="0" max="300" step='10' />
+							<input id="DF_gaps" type="range" min="0" max="120" step='5' value='0' />
 							<span id="DF_gaps_currentValue">0</span></p>
 						</fieldset>
 					</form>
@@ -104,7 +104,7 @@ var __adobewebfontsappname__="dreamweaver"
 							<input type="checkbox" name="a" value="aa" />
 							Enable Filter</p> -->
 							<p class="note">Threshold(days) 
-							<input id="DF_overlaps" type="range" min="0" max="300" step='10' />
+							<input id="DF_overlaps" type="range" min="0" max="120" step='5' value='0' />
 							<span id="DF_overlaps_currentValue">0</span></p>          
 						</fieldset>
 					</form>
@@ -189,6 +189,7 @@ var __adobewebfontsappname__="dreamweaver"
   }
   </script>	
   <script>
+  var w_view
   var g_rawdata;
   var g_data;
   var g_colorPal = d3.scale.category10().domain(d3.range(0,10));
@@ -299,27 +300,29 @@ function initialize() {
 
 //  var d_rangenfrequency = ParseData_MPRRange(g_ranData.MPRALL);
  // var d_mprovertime = GetData_MPR_over_TIME(null);
+
+  w_view = $('#middleview').width();  
  
- var o_chartoption = createChartOption(1000 ,400,"MPR","# of Patients",'MPR_DIST');
+
+ var o_chartoption = createChartOption(w_view ,400,"MPR","# of Patients",'MPR_DIST');
  createChartDiv('Chart_Bar_MPR_DISTRIBUTION');
  createbarChart(g_data,"Chart_Bar_MPR_DISTRIBUTION", 'new',o_chartoption); 
  
  
- 
- o_chartoption = createChartOption(1000,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');
+ o_chartoption = createChartOption(w_view,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');
  createChartDiv('Chart_Line_MPR_overMONTH');  
  createLinechart(g_data,"Chart_Line_MPR_overMONTH",'new',o_chartoption);
  
- var o_chartoption = createChartOption(1000 ,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
+ var o_chartoption = createChartOption(w_view ,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
  createChartDiv('Chart_Scatter_MPR_overMONTH'); 
  createScatterchart(g_data,"Chart_Scatter_MPR_overMONTH", 'new',o_chartoption);
  
  
- o_chartoption = createChartOption(1000 ,400,"CSA","# of Patients",'CSA_DIST');
+ o_chartoption = createChartOption(w_view ,400,"CSA","# of Patients",'CSA_DIST');
  createChartDiv('Chart_Bar_CSA_DISTRIBUTION');
  createbarChart(g_data,"Chart_Bar_CSA_DISTRIBUTION", 'new',o_chartoption);
  
- o_chartoption = createChartOption(1000 ,400,"CMG","# of Patients",'CMG_DIST');
+ o_chartoption = createChartOption(w_view ,400,"CMG","# of Patients",'CMG_DIST');
  createChartDiv('Chart_Bar_CMG_DISTRIBUTION');
  createbarChart(g_data,"Chart_Bar_CMG_DISTRIBUTION", 'new',o_chartoption);
  
@@ -338,7 +341,6 @@ $(function(){
     $('#DF_gaps').change(function(){
         currentValue.html(this.value);
 		//call data reset
-			$( ".GraphViewCSS" ).remove();		
 		 $.getJSON('/data', {           
               gap: this.value
             },
@@ -357,7 +359,6 @@ $(function(){
     $('#DF_overlaps').change(function(){
         currentValue.html(this.value);
 		//call data reset
-			$( ".GraphViewCSS" ).remove();		
 		 $.getJSON('/data', {           
               overlap: this.value
             },
@@ -373,7 +374,8 @@ function renewData() {
 	console.log('attemping renew data\n');
 
     console.log(	$( ".GraphViewCSS" ));
-
+    $( ".GraphViewCSS" ).remove();		
+		
 	initialize()
 	//.remove(this);
 	
@@ -466,13 +468,13 @@ function Quick_createGroupByDrug() {
 }
 function updateAllChart(new_group){
 	
-	var o_chartoption = createChartOption(1000,400,"MPR","# of Patients",'MPR_DIST');
+	var o_chartoption = createChartOption(w_view,400,"MPR","# of Patients",'MPR_DIST');
 		 createbarChart(new_group,"Chart_Bar_MPR_DISTRIBUTION", 'appendGroup',o_chartoption); 
 		 
-		 o_chartoption = createChartOption(1000,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');		
+		 o_chartoption = createChartOption(w_view,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');		
 		 createLinechart(new_group,"Chart_Line_MPR_overMONTH",'appendGroup',o_chartoption);
 		 
-		  var o_chartoption = createChartOption(1000,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
+		  var o_chartoption = createChartOption(w_view,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
 		 createScatterchart(new_group,"Chart_Scatter_MPR_overMONTH", 'appendGroup',o_chartoption);
 }
   </script>

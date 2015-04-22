@@ -62,12 +62,19 @@ var __adobewebfontsappname__="dreamweaver"
 
                     <hr>
                     
-					<button type="button" class="btn btn-default btn-lg" onClick="Quick_createGroupByDrug();">
+					<button type="button" class="btn btn-default btn-lg" onClick="Quick_createGroupByGender();">
 						  <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>  Gender Analysis
                     </button>
                     <br><br>
                     This automatically groups the patients according to their gender.
-                    <br><hr>			
+                    <br><hr>		
+                    
+                    <button type="button" class="btn btn-default btn-lg" onClick="Quick_createGroupByAge();">
+						  <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>  Age Analysis
+                    </button>
+                    <br><br>
+                    This automatically groups the patients according to their age.
+                    <br><hr>		
 					
 					
 				</div>
@@ -85,7 +92,7 @@ var __adobewebfontsappname__="dreamweaver"
 							Enable Filter
 							</label> -->
 							<p class="note">Threshold(days) 
-							<input id="DF_gaps" type="range" min="0" max="180" step='10' />
+							<input id="DF_gaps" type="range" min="0" max="300" step='10' />
 							<span id="DF_gaps_currentValue">0</span></p>
 						</fieldset>
 					</form>
@@ -97,7 +104,7 @@ var __adobewebfontsappname__="dreamweaver"
 							<input type="checkbox" name="a" value="aa" />
 							Enable Filter</p> -->
 							<p class="note">Threshold(days) 
-							<input id="DF_overlaps" type="range" min="0" max="180" step='10' />
+							<input id="DF_overlaps" type="range" min="0" max="300" step='10' />
 							<span id="DF_overlaps_currentValue">0</span></p>          
 						</fieldset>
 					</form>
@@ -225,6 +232,12 @@ function constructInitData(data,conditionName,conditionValue) {
 		if(conditionName=="drug_id") {
 			//console.log(p.drug_details[drugIndex].drug_id+"      "+conditionValue+"\n");
 			if(p.drug_details[drugIndex].drug_id!=conditionValue) continue;
+		} else if(conditionName=="gender") {
+			//console.log(p.drug_details[drugIndex].drug_id+"      "+conditionValue+"\n");
+			if(p.gender!=conditionValue) continue;
+		} else if(conditionName=="age") {
+			//console.log(p.drug_details[drugIndex].drug_id+"      "+conditionValue+"\n");
+			if(p.age<conditionValue.min || p.age>conditionValue.max) continue;
 		}
 		numPatient++;
 		//patient data
@@ -363,9 +376,48 @@ function renewData() {
 	
 	
 }
-function Quick_createGroupByDrug() {
-	var genderL = ["male","female"];
+function Quick_createGroupByAge() {
+	var ageRange = [ {min:0 , max:20}, {min:21,max:40}];
 	
+	for(var i=0;i<ageRange.length;i++)
+	{
+		
+		var range = ageRange[i];	
+	//form patient group for each drug
+		new_group = createPatientGroup("AgeGroup ("+ range.min + " <= age <="+range.max+")",g_colorPal(group_numberofGroups));			
+		new_group = constructInitData(new_group,"age",range);
+		
+
+
+//		AddGrouptoUI(groupname,color,filter)
+		AddGrouptoUI(new_group.name,new_group.color,null);
+
+	//update group to each visualization
+
+		updateAllChart(new_group);		 
+	}
+	
+}
+function Quick_createGroupByGender() {
+	var genderL = ["male","female"];
+	var idx=0;
+	for(var gen in genderL){		
+
+		
+	//form patient group for each drug
+		new_group = createPatientGroup("GenderGroup (gender="+gen+")",g_colorPal(group_numberofGroups));			
+		new_group = constructInitData(new_group,"gender",idx);
+		
+
+//		AddGrouptoUI(groupname,color,filter)
+		AddGrouptoUI(new_group.name,new_group.color,null);
+
+	//update group to each visualization
+
+		updateAllChart(new_group);		 
+		idx++;
+		
+	}
 }
 function Quick_createGroupByDrug() {
 	//create comprehensive groups with different drugs. ( dual/triple Therapy is not considered)
@@ -373,6 +425,7 @@ function Quick_createGroupByDrug() {
 	var drugNameList =[];
 	//get the list of drug
 	var new_group;
+	
 	for(var drug in g_rawdata.drugs){
 		var drugname = String(drug);
 
@@ -380,15 +433,14 @@ function Quick_createGroupByDrug() {
 	//form patient group for each drug
 		new_group = createPatientGroup("DrugGroup (drugID="+drugname+")",g_colorPal(group_numberofGroups));			
 		new_group = constructInitData(new_group,"drug_id",drugname);
-		console.log(new_group);
-		console.log(g_data);
+		
 
 //		AddGrouptoUI(groupname,color,filter)
-	AddGrouptoUI(new_group.name,new_group.color,null);
+		AddGrouptoUI(new_group.name,new_group.color,null);
 
 	//update group to each visualization
 
-				updateAllChart(new_group);		 
+		updateAllChart(new_group);		 
 		
 	}
 

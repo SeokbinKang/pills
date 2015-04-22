@@ -237,7 +237,7 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
                 if len(overlapLen)>0:
                     patient.avgOverlapLen[drugID]=sum(overlapLen)*1.0/len(overlapLen)
 
-    printPatients(patients)
+    #printPatients(patients)
 
     #collect stats
     drugStats={}

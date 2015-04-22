@@ -214,6 +214,8 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
                 index=0
                 while startDate<endDate:
                     nextEndDate=min(startDate+datetime.timedelta(days=30), endDate)
+                    if (nextEndDate-startDate).days<30:
+                        break
                     interval=(nextEndDate-startDate).days
                     supplyLen=0
                     while startDate<nextEndDate:
@@ -411,5 +413,5 @@ def printDrugStats(drugStats, drugList):
         print 'MPR:'
         print drugStats[drugID].MPR
 
-#process('data/sample_data.txt', drugList=['4', '5'], overlap=0, gap=300)
+#process('data/sample_data.txt', drugList=['4', '5'], overlap=0, gap=0)
 

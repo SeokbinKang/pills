@@ -1,6 +1,20 @@
 // JavaScript Document
-var group_numberofGroups=0;
-var GroupList=[];
+  var group_numberofGroups=0;
+  var GroupList=[];
+ function AddGrouptoUI(groupname,color,filter) {
+	 var grouproot = document.getElementById('groups');
+	 var div_ = document.createElement("div");
+	 var div_child = document.createElement("div");
+	 var div_child2 = document.createElement("div");
+	 div_.className = 'GroupItemCSS';
+	 div_child.className = 'GroupNameCSS';
+	 div_child.innerHTML = groupname;
+	 div_child.style.background=color;
+	 div_.appendChild(div_child);
+	 	 div_.appendChild(div_child2);
+	// div_child2.innerHTML = filter.MPRFilter.minValue + " <= "+filter.filterMeasure + " <= " +filter.MPRFilter.maxValue;
+	 grouproot.appendChild(div_);
+ }
 function Group_CreateGroup(patientIDs,filter) {
 	//TODO create group list
 	//TODO Add visual element to each chart	
@@ -67,7 +81,7 @@ function GetData_MPR_over_TIME(patiensIDs) {
 }
    
 
-function createbarChart(data_,parentNodeID,flag, cOption) {
+function createbarChart(data_o,parentNodeID,flag, cOption) {
 	var margin = {top: 40, right: 70, bottom: 80, left: 70},
 	 width = cOption.width - margin.left - margin.right,
     height = cOption.height - margin.top - margin.bottom;
@@ -75,7 +89,7 @@ function createbarChart(data_,parentNodeID,flag, cOption) {
 
 	if(cOption.type == 'MPR_DIST') {
 		
-		data_=data_.stats.mprRange;
+		data_=data_o.stats.mprRange;
 		xAttr= 'range';
 		yAttr= 'count';
 		xLabel = cOption.xLabel;
@@ -83,7 +97,7 @@ function createbarChart(data_,parentNodeID,flag, cOption) {
 			
 	} else if(cOption.type == 'CSA_DIST'){
 		
-		data_=data_.stats.csaRange;
+		data_=data_o.stats.csaRange;
 		xAttr= 'range';
 		yAttr= 'count';
 		xLabel = cOption.xLabel;
@@ -91,7 +105,7 @@ function createbarChart(data_,parentNodeID,flag, cOption) {
 		
 	} else if(cOption.type == 'CMG_DIST'){
 		
-		data_=data_.stats.cmgRange;
+		data_=data_o.stats.cmgRange;
 		xAttr= 'range';
 		yAttr= 'count';
 		xLabel = cOption.xLabel;
@@ -116,13 +130,56 @@ var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left")
     .ticks(10, "d");
+	if(flag=='appendGroup') {
+		
+		var svgg =document.getElementById(parentNodeID+"_svg");		
+		svgg = svgg.getElementsByTagName('g');
+		svgg=svgg[0];
 
+		maxFrequency = parseInt(svgg.getAttribute('maxFrequency'));
+
+		x.domain(data_.map(function(d) {  return d[xAttr]; }));
+		
+		y.domain([0,maxFrequency+10]);
+			  
+	  	svg = d3.select("#"+parentNodeID+"_svg"+" g");
+		
+
+		svg = svg.append("g")
+			//    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+				//.attr("groupID",data_.id);
+				.attr("groupID","group"+data_o.id);
+				
+ 	    svg.selectAll(".bar")
+ 	       .data(data_)
+	    .enter().append("rect")
+    	  .attr("class", "bardefault")
+		  .style("fill",data_o.color)
+	      .attr("x", function(d) { return x(d[xAttr])+(parseInt(data_o.id)-2)*x.rangeBand()/2; })
+	      .attr("id", function(d) { return "bar"+d[xAttr]; })
+	      .attr("width", x.rangeBand()/2)
+	      .attr("y", function(d) { return y(d[yAttr]); })
+    	  .attr("height", function(d) {	  return height - y(d[yAttr]); })	; 
+	
+	
+		
+		
+	} else {
+		
+		maxFrequency=0;
+	  x.domain(data_.map(function(d) { 
+  if(d[yAttr]>maxFrequency) maxFrequency=d[yAttr];
+  return d[xAttr]; }));
+  y.domain([0,maxFrequency+10]);
 var svg = d3.select("#"+parentNodeID).append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
+	.attr("id", parentNodeID+"_svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-	.attr("measure",xLabel);
+	.attr("measure",xLabel)
+	.attr("maxFrequency",maxFrequency)
+	.attr("barWidth",x.rangeBand());
 
 var brush = d3.svg.brush()
       .x(x)
@@ -135,11 +192,7 @@ var brush = d3.svg.brush()
 
 var maxFrequency=0;
   	
-  x.domain(data_.map(function(d) { 
-  if(d[yAttr]>maxFrequency) maxFrequency=d[yAttr];
-  return d[xAttr]; }));
-//  y.domain([0, d3.max(data_, function(d) { return d.count; })]);
-y.domain([0,maxFrequency+10]);
+
 svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
@@ -234,9 +287,9 @@ svg.append("g")
 	var newFilter = createFilterOption(true,(min_-mprwidth).toFixed(2),max_.toFixed(2),this.getAttribute("measure"));
 	
 	Group_CreateGroup(null,newFilter);
-	console.log(this.getAttribute("measure"));
-	console.log(this);
-	console.log(newFilter);
+	//console.log(this.getAttribute("measure"));
+//	console.log(this);
+	//console.log(newFilter);
 	for(i=0;i<BarSelected.length-10;i++){
 		if(BarSelected[i]>0) {
 		//	console.log(svg);
@@ -251,6 +304,7 @@ function type(d) {
   d.frequency = +d.frequency;
   return d;
 }
+	}
 }
 
 
@@ -279,7 +333,7 @@ function createLinechart(data_o,parentNodeID,flag,chartOption){
 	} else 	return ;
 	
 	
-	
+	console.log(data_);
 	var x_trans = d3.scale.linear()
     .domain([0, data_.length ])
     .range([0, width]);
@@ -297,21 +351,22 @@ function createLinechart(data_o,parentNodeID,flag,chartOption){
     .orient("left")
     .ticks(10, "d");
 	
-	if(flag=='appendData') {
+	if(flag=='appendGroup') {
 		console.log("#"+parentNodeID+"_svg"+" g"); 
 		var svg = d3.select("#"+parentNodeID+"_svg"+" g");
 		var line = d3.svg.line()
  		   .x(function(d, i) { return x_trans(i); })
-		    .y(function(d, i) { return y_trans(d);;})
+		    .y(function(d, i) { return y_trans(d[yAttr]);;})
 			.interpolate("basis");
- 		console.log(dataID);
+
 		var path = svg.append("g")
-		    .attr("clip-path",dataID)
+		    .attr("clip-path",data_o.id)
+			.attr("group","group"+data_o.id)
 		  .append("path")
 		    .datum(data_)
 		    .attr("d", line)
 			.style("fill", "none") //chance.integer({min: 0, max: 10})
-			.style("stroke",filter.color)
+			.style("stroke",data_o.color)
 			.style("stroke-width",3);
 		
 		return path;
@@ -418,8 +473,21 @@ function createScatterchart(data_o,parentNodeID,flag,chartOption){
 		color_ = data_o.color;
 		
 	} else 	return ;
-	
-	if(flag=='filter') {
+	if(flag=="appendGroup"){
+		
+		var svg = d3.select("#"+parentNodeID+"_svg"+" g");
+		svg = svg.append("g")		
+				.attr("groupID","group"+data_o.id);
+		svg.selectAll(".dot")
+   		   .data(data_)
+		   .enter().append("circle")
+		      .attr("r", 3.5)
+		      .attr("cx",function(d, i) { return x_trans(d[xAttr]); })
+		      .attr("cy",function(d, i) { return y_trans(d[yAttr]); })
+//			  .attr("id",function(d,i) { return "dot"+i;})
+		      .style("fill", data_o.color); 
+		
+	} else 	if(flag=='filter') {
 		console.log("#"+parentNodeID+"_svg"+" g"); 
 		var svg = d3.select("#"+parentNodeID+"_svg"+" g");
 		
@@ -427,39 +495,18 @@ function createScatterchart(data_o,parentNodeID,flag,chartOption){
 			var filtermin = Filter.MPRFilter.minValue;
 			var filtermax = Filter.MPRFilter.maxValue;
 			var minY = y_trans(filtermin);
-			var maxY = y_trans(filtermax);
-			
-/*			var circles = svg.selectAll("circle");
-			console.log(circles.length);
-			for(var i=0;i<circles.length;i++)
-			{
-				if(circles[i].cy <=minY && circles.cy >=maxY ) circles[i].fill = Filter.color;
-			}*/
+			var maxY = y_trans(filtermax);			
+
 			svg.selectAll("circle").style("fill",function(d,i) { 
 			
 				if(d[0]>=filtermin && d[0]<=filtermax) {
 					return Filter.color;
 				}//
-				//return '#E6E6FA';
+			
 				return svg.select("#dot"+i).style("fill");
 			});
 						
 		}
-		/*var line = d3.svg.line()
- 		   .x(function(d, i) { return x_trans(i); })
-		    .y(function(d, i) { return y_trans(d);;})
-			.interpolate("basis");
- 		console.log(dataID);
-		var path = svg.append("g")
-		    .attr("clip-path",dataID)
-		  .append("path")
-		    .datum(data_)
-		    .attr("d", line)
-			.style("fill", "none") //chance.integer({min: 0, max: 10})
-			.style("stroke",color(dataID))
-			.style("stroke-width",3);*/
-		
-	
 		
 		
 	} else {

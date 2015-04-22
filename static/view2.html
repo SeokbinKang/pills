@@ -50,31 +50,26 @@ var __adobewebfontsappname__="dreamweaver"
 	<div class="row">
 		<div class="col-md-3" id="leftcontrol">
 			<div class="panel panel-default">
-				<div class="panel-heading"> Data Filtering</div>
+				<div class="panel-heading"> Quick Start</div>
 				<div class="panel-body">
-					<form method="post">
-						<fieldset>
-								<legend><b>Measures</b></legend>
-								<input type="checkbox" name="a" value="aa" />MPR(Medication Possession Rate) <br />
-								<input type="checkbox" name="b" value="bb" />CSA(Continuous single-interval medication availability)<br />
-								<input type="checkbox" name="c" value="cc" />CMG (continuous multiple-interval medication gaps)<br />
-						</fieldset>
-					</form>
-					<form method="post">
-						<fieldset>
-							<legend><b>Drugs</b></legend>
-							<input type="checkbox" name="a" value="aa" />ABC <br />
-							<input type="checkbox" name="b" value="bb" />DEF<br />
-							<input type="checkbox" name="c" value="cc" />OPP <br />   
-						</fieldset>
-					</form>
-					<form method="post">
-						<fieldset>
-							<legend><b>Gender</b></legend>
-							<input type="checkbox" name="a" value="aa" />Male <br />
-							<input type="checkbox" name="b" value="bb" />Female<br />      
-						</fieldset>
-					</form>
+					
+					<button type="button" class="btn btn-default btn-lg" onClick="Quick_createGroupByDrug();">
+						  <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>  Drug Analysis
+                    </button>
+                    <br><br>
+                    This automatically groups the patients according to their dominant prescription drugID.
+                    <br>
+
+                    <hr>
+                    
+					<button type="button" class="btn btn-default btn-lg" onClick="Quick_createGroupByDrug();">
+						  <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>  Gender Analysis
+                    </button>
+                    <br><br>
+                    This automatically groups the patients according to their gender.
+                    <br><hr>			
+					
+					
 				</div>
 			</div>
 			<div class="panel panel-default">
@@ -108,6 +103,32 @@ var __adobewebfontsappname__="dreamweaver"
 					</form>
 				</div>    
 			</div>
+            <div class="panel-heading"> Data Filtering</div>
+				<div class="panel-body">
+					<form method="post">
+						<fieldset>
+								<legend><b>Measures</b></legend>
+								<input type="checkbox" name="a" value="aa" />MPR(Medication Possession Rate) <br />
+								<input type="checkbox" name="b" value="bb" />CSA(Continuous single-interval medication availability)<br />
+								<input type="checkbox" name="c" value="cc" />CMG (continuous multiple-interval medication gaps)<br />
+						</fieldset>
+					</form>
+					<form method="post">
+						<fieldset>
+							<legend><b>Drugs</b></legend>
+							<input type="checkbox" name="a" value="aa" />ABC <br />
+							<input type="checkbox" name="b" value="bb" />DEF<br />
+							<input type="checkbox" name="c" value="cc" />OPP <br />   
+						</fieldset>
+					</form>
+					<form method="post">
+						<fieldset>
+							<legend><b>Gender</b></legend>
+							<input type="checkbox" name="a" value="aa" />Male <br />
+							<input type="checkbox" name="b" value="bb" />Female<br />      
+						</fieldset>
+					</form>
+				</div>
 			<div class="panel panel-default">
 				<div class="panel-heading"> Data Setting</div>
 				<div class="panel-body"> 
@@ -134,7 +155,7 @@ var __adobewebfontsappname__="dreamweaver"
 	
 		<div class="col-md-6 " id="middleview">
 			<div class="panel panel-default">
-				<div class="panel-heading" id="middleHeading">MPR</div>
+				<div class="panel-heading" id="middleHeading">Distribution</div>
 			</div>
 		</div>
 		<div class="col-md-3 " id="rightcontrol">
@@ -163,7 +184,7 @@ var __adobewebfontsappname__="dreamweaver"
   <script>
   var g_rawdata;
   var g_data;
-
+  var g_colorPal = d3.scale.category10().domain(d3.range(0,10));
 $.getJSON('/data', function(data) {     
 			g_rawdata=data;
 			initialize();
@@ -171,20 +192,22 @@ $.getJSON('/data', function(data) {
   
 function createPatientGroup(name_,color_)
 {
-	var g = {name : name_, color : color_, stats : {mprRange : [] , csaRange : [] , cmgRange : [], mpr30 : []}, patientData : [] };
+	group_numberofGroups++;
+	var g = {name : name_, id :group_numberofGroups ,  color : color_, stats : {mprRange : [] , csaRange : [] , cmgRange : [], mpr30 : []}, patientData : [] };
 	return g;
 }
-function constructInitData(data) {
+function constructInitData(data,conditionName,conditionValue) {
 
 
 
    var Nrange=20;  //MPR range count
 	
   for (i=0;i<Nrange;i++){
-    data.stats.mprRange[i]={range : 0 , count : 0};
-     data.stats.csaRange[i]={range : 0 , count : 0};
-     data.stats.cmgRange[i]={range : 0 , count : 0};
+    data.stats.mprRange[i]={range : i/Nrange , count : 0};
+     data.stats.csaRange[i]={range : i/Nrange , count : 0};
+     data.stats.cmgRange[i]={range : i/Nrange , count : 0};
   }
+  var numPatient=-1;
   for (i = 0; i < g_rawdata.patients.length; i++) { 
   
   		//only take dominant drug
@@ -199,30 +222,34 @@ function constructInitData(data) {
 			}
 		}
 		if(drugIndex==-1) continue;
-		
+		if(conditionName=="drug_id") {
+			//console.log(p.drug_details[drugIndex].drug_id+"      "+conditionValue+"\n");
+			if(p.drug_details[drugIndex].drug_id!=conditionValue) continue;
+		}
+		numPatient++;
 		//patient data
-		data.patientData[i] = new Object();
-   		data.patientData[i].id = p.patient_id;		
-		data.patientData[i].avgMPR = p.drug_details[drugIndex].mpr.toFixed(4);
-		data.patientData[i].totalPeriod = p.drug_details[drugIndex].total_period;
-  		
+		data.patientData[numPatient] = new Object();
+   		data.patientData[numPatient].id = p.patient_id;		
+		data.patientData[numPatient].avgMPR = p.drug_details[drugIndex].mpr.toFixed(4);
+		data.patientData[numPatient].totalPeriod = p.drug_details[drugIndex].total_period;
+  		data.patientData[numPatient].dominantDrug = p.drug_details[drugIndex].drug_id;
   		//statistical data
-		ival = (data.patientData[i].avgMPR*Nrange) | 0; // range index
+		ival = (data.patientData[numPatient].avgMPR*Nrange) | 0; // range index
 		if(ival>=Nrange) ival = Nrange-1;
-		data.stats.mprRange[ival].range = ival/Nrange
+	//	data.stats.mprRange[ival].range = ival/Nrange
 		data.stats.mprRange[ival].count++;
 		
 		
 		//csa
 		ival = (p.drug_details[drugIndex].average_csa * Nrange) | 0;
 		if(ival>=Nrange) ival = Nrange-1;
-		data.stats.csaRange[ival].range = ival/Nrange
+		//data.stats.csaRange[ival].range = ival/Nrange
 		data.stats.csaRange[ival].count++;
 		
 		//cmg
 		ival = (p.drug_details[drugIndex].avg_cmg * Nrange) | 0;
 		if(ival>=Nrange) ival = Nrange-1;
-		data.stats.cmgRange[ival].range = ival/Nrange
+		//data.stats.cmgRange[ival].range = ival/Nrange
 		data.stats.cmgRange[ival].count++;
 		
 		//mpr30
@@ -283,6 +310,8 @@ function initialize() {
  //createLinechart(d_mprovertime,"GraphView_Period",'new','all',o_chartoption);
 console.log("initialized\n");
 console.log(g_data);
+console.log(g_rawdata);
+//Quick_createGroupByDrug();
 // 
   }
   
@@ -334,20 +363,47 @@ function renewData() {
 	
 	
 }
- function AddGrouptoUI(groupname,color,filter) {
-	 var grouproot = document.getElementById('groups');
-	 var div_ = document.createElement("div");
-	 var div_child = document.createElement("div");
-	 var div_child2 = document.createElement("div");
-	 div_.className = 'GroupItemCSS';
-	 div_child.className = 'GroupNameCSS';
-	 div_child.innerHTML = groupname;
-	 div_child.style.background=color;
-	 div_.appendChild(div_child);
-	 	 div_.appendChild(div_child2);
-	 div_child2.innerHTML = filter.MPRFilter.minValue + " <= "+filter.filterMeasure + " <= " +filter.MPRFilter.maxValue;
-	 grouproot.appendChild(div_);
- }
+function Quick_createGroupByDrug() {
+	var genderL = ["male","female"];
+	
+}
+function Quick_createGroupByDrug() {
+	//create comprehensive groups with different drugs. ( dual/triple Therapy is not considered)
+
+	var drugNameList =[];
+	//get the list of drug
+	var new_group;
+	for(var drug in g_rawdata.drugs){
+		var drugname = String(drug);
+
+		
+	//form patient group for each drug
+		new_group = createPatientGroup("DrugGroup (drugID="+drugname+")",g_colorPal(group_numberofGroups));			
+		new_group = constructInitData(new_group,"drug_id",drugname);
+		console.log(new_group);
+		console.log(g_data);
+
+//		AddGrouptoUI(groupname,color,filter)
+	AddGrouptoUI(new_group.name,new_group.color,null);
+
+	//update group to each visualization
+
+				updateAllChart(new_group);		 
+		
+	}
+
+}
+function updateAllChart(new_group){
+	
+	var o_chartoption = createChartOption(1000,400,"MPR","# of Patients",'MPR_DIST');
+		 createbarChart(new_group,"Chart_Bar_MPR_DISTRIBUTION", 'appendGroup',o_chartoption); 
+		 
+		 o_chartoption = createChartOption(1000,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');		
+		 createLinechart(new_group,"Chart_Line_MPR_overMONTH",'appendGroup',o_chartoption);
+		 
+		  var o_chartoption = createChartOption(1000,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
+		 createScatterchart(new_group,"Chart_Scatter_MPR_overMONTH", 'appendGroup',o_chartoption);
+}
   </script>
 </div>
 </body>

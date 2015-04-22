@@ -292,34 +292,32 @@ function initialize() {
 	g_data = constructInitData(g_data);
 
   //construct g_data;
-
-
-	  
+	var w = $('#middleview').width();  
  // var g_ranData = GetRandomMPRData();
 
 //  var d_rangenfrequency = ParseData_MPRRange(g_ranData.MPRALL);
  // var d_mprovertime = GetData_MPR_over_TIME(null);
  
- var o_chartoption = createChartOption(1000,400,"MPR","# of Patients",'MPR_DIST');
+ var o_chartoption = createChartOption(w,400,"MPR","# of Patients",'MPR_DIST');
  createChartDiv('Chart_Bar_MPR_DISTRIBUTION');
  createbarChart(g_data,"Chart_Bar_MPR_DISTRIBUTION", 'new',o_chartoption); 
  
  
  
- o_chartoption = createChartOption(1000,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');
+ o_chartoption = createChartOption(w,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');
  createChartDiv('Chart_Line_MPR_overMONTH');  
  createLinechart(g_data,"Chart_Line_MPR_overMONTH",'new',o_chartoption);
  
- var o_chartoption = createChartOption(1000,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
+ var o_chartoption = createChartOption(w,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
  createChartDiv('Chart_Scatter_MPR_overMONTH'); 
  createScatterchart(g_data,"Chart_Scatter_MPR_overMONTH", 'new',o_chartoption);
  
  
- o_chartoption = createChartOption(1000,400,"CSA","# of Patients",'CSA_DIST');
+ o_chartoption = createChartOption(w,400,"CSA","# of Patients",'CSA_DIST');
  createChartDiv('Chart_Bar_CSA_DISTRIBUTION');
  createbarChart(g_data,"Chart_Bar_CSA_DISTRIBUTION", 'new',o_chartoption);
  
- o_chartoption = createChartOption(1000,400,"CMG","# of Patients",'CMG_DIST');
+ o_chartoption = createChartOption(w,400,"CMG","# of Patients",'CMG_DIST');
  createChartDiv('Chart_Bar_CMG_DISTRIBUTION');
  createbarChart(g_data,"Chart_Bar_CMG_DISTRIBUTION", 'new',o_chartoption);
  
@@ -379,6 +377,7 @@ function renewData() {
 	
 	
 }
+<<<<<<< HEAD
 function Interact_createMPRRangeGroup(mprmin,mprmax){
 	var range = {min:mprmin , max:mprmax};
 	new_group = createPatientGroup("MPRGroup ("+ range.min + " < MPR <="+range.max+")",g_colorPal(group_numberofGroups));			
@@ -475,6 +474,27 @@ function updateAllChart(new_group){
 		  var o_chartoption = createChartOption(1000,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
 		 createScatterchart(new_group,"Chart_Scatter_MPR_overMONTH", 'appendGroup',o_chartoption);
 }
+=======
+ function AddGrouptoUI(groupname,color,filter) {
+	 var grouproot = document.getElementById('groups');
+	 var div_ = document.createElement("div");
+	 var div_child = document.createElement("div");
+	 var div_child2 = document.createElement("div");
+	 div_.className = 'GroupItemCSS';
+	 div_child.className = 'GroupNameCSS';
+	 div_child.innerHTML = groupname;
+	 div_child.style.background=color;
+	 div_.appendChild(div_child);
+	 	 div_.appendChild(div_child2);
+	 div_child2.innerHTML = filter.MPRFilter.minValue + " <= "+filter.filterMeasure + " <= " +filter.MPRFilter.maxValue;
+	 grouproot.appendChild(div_);
+ }
+function reloadViwew(){
+	$( ".GraphViewCSS" ).remove();		
+	renewData();
+}
+window.onresize = reloadViwew;
+>>>>>>> origin/master
   </script>
 </div>
 </body>

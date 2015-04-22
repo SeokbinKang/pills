@@ -25,13 +25,13 @@ class Data(Resource):
     if (args['ageMin'] is not None):
       ageMin = args['ageMin']
         
-    ageMax = 0
+    ageMax = 100
     if (args['ageMax'] is not None):
       ageMin = args['ageMax']
 
     gap = 0
     if (args['gap'] is not None):
-      ageMin = args['gap']
+      gap = args['gap']
 
     overlap = 0
     if (args['overlap'] is not None):

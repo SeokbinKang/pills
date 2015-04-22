@@ -411,5 +411,5 @@ def printDrugStats(drugStats, drugList):
         print 'MPR:'
         print drugStats[drugID].MPR
 
-process('data/sample_data.txt', drugList=['4', '5'], overlap=0, gap=0)
+#process('data/sample_data.txt', drugList=['4', '5'], overlap=0, gap=300)
 

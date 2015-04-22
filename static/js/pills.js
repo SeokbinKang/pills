@@ -12,7 +12,9 @@
 	 if(size!=null) {
 		 div_child.style.width = (parseInt(size)+"%");
 	 }
-	 div_child.innerHTML = groupname;
+//	 div_child.innerHTML = "-";
+	div_child.style.height = "30px";
+	 div_.innerHTML = groupname;
 	 div_child.style.background=color;
 	 div_.appendChild(div_child);
 	 	 div_.appendChild(div_child2);
@@ -222,8 +224,10 @@ svg.append("g")
 	  .style("fill","goldenrod") 
       .text(yLabel);
 	  
-
-  svg.selectAll(".bar")
+var groupRoot = svg.append("g")		
+				.attr("groupID","group"+data_o.id);
+				
+  groupRoot.selectAll(".bar")
       .data(data_)
     .enter().append("rect")
       .attr("class", "bardefault")
@@ -242,6 +246,7 @@ svg.append("g")
      // y.domain(domainByTrait[p.y]);
    //   brushCell = this;
  //   }
+ 		BarSelected=[];
   }
 
   // Highlight the selected circles.
@@ -250,7 +255,8 @@ svg.append("g")
   function brushmove(p) {
     var e = brush.extent();
    // console.log(e[0][0] + "  " + e[1][0]);
-    svg.selectAll("rect").classed("barselected", function(d,i) {
+   groupRoot.selectAll("rect").classed("barselected", function(d,i) {
+   // svg.selectAll("rect").classed("barselected", function(d,i) {
 			var defcolor = false;
 			var rect_x=x(d.range);
 			//console.log(i);
@@ -275,31 +281,32 @@ svg.append("g")
 	
 
 	var min_,max_;
-	min_=100;
-	max_=0;
+	min_=1000;
+	max_=-1;
 	var mprwidth = MprData[1].range- MprData[0].range;
-	for(i=0;i<BarSelected.length-10;i++){  //why -10? idk.
-
+	console.log(MprData);
+	for(i=0;i<BarSelected.length;i++){  //why -10? idk.
+		console.log(i);
 		if(BarSelected[i]>0) {
 			if(MprData[i].range<min_) min_=MprData[i].range;
 			if(MprData[i].range>max_) max_=MprData[i].range;
 			
 		}
 		
-	}	
+	}
+	if(min_ == 1000) return ;	
 		
-	var newFilter = createFilterOption(true,(min_-mprwidth).toFixed(2),max_.toFixed(2),this.getAttribute("measure"));
-	
-	Group_CreateGroup(null,newFilter);
-	//console.log(this.getAttribute("measure"));
-//	console.log(this);
-	//console.log(newFilter);
-	for(i=0;i<BarSelected.length-10;i++){
+//	var newFilter = createFilterOption(true,(min_-mprwidth).toFixed(2),max_.toFixed(2),this.getAttribute("measure"));
+	//if(min_==0) min_=-0.1;
+	var group_ = Interact_createMPRRangeGroup(min_,max_);
+	console.log(group_);
+
+	/*for(i=0;i<BarSelected.length-10;i++){
 		if(BarSelected[i]>0) {
 		//	console.log(svg);
-			svg.selectAll('.barselected').style("fill", newFilter.color);
+			svg.selectAll('.barselected').style("fill", group_.color);
 		}
-	}
+	}*/
 	
 	svg.selectAll("rect").classed("barselected",false);
   }

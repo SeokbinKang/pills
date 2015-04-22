@@ -209,7 +209,7 @@ function constructInitData(data,conditionName,conditionValue) {
 
    var Nrange=20;  //MPR range count
 	
-  for (i=0;i<Nrange;i++){
+  for (i=0;i<=Nrange;i++){
     data.stats.mprRange[i]={range : i/Nrange , count : 0};
      data.stats.csaRange[i]={range : i/Nrange , count : 0};
      data.stats.cmgRange[i]={range : i/Nrange , count : 0};
@@ -238,6 +238,8 @@ function constructInitData(data,conditionName,conditionValue) {
 		} else if(conditionName=="age") {
 			//console.log(p.drug_details[drugIndex].drug_id+"      "+conditionValue+"\n");
 			if(p.age<conditionValue.min || p.age>conditionValue.max) continue;
+		} else if(conditionName=="MPRrange") {
+			if(p.drug_details[drugIndex].mpr<=conditionValue.min || p.drug_details[drugIndex].mpr>conditionValue.max) continue;
 		}
 		numPatient++;
 		//patient data
@@ -248,7 +250,7 @@ function constructInitData(data,conditionName,conditionValue) {
   		data.patientData[numPatient].dominantDrug = p.drug_details[drugIndex].drug_id;
   		//statistical data
 		ival = (data.patientData[numPatient].avgMPR*Nrange) | 0; // range index
-		if(ival>=Nrange) ival = Nrange-1;
+		//if(ival>=Nrange) ival = Nrange-1;
 	//	data.stats.mprRange[ival].range = ival/Nrange
 		data.stats.mprRange[ival].count++;
 		
@@ -376,6 +378,21 @@ function renewData() {
 	//.remove(this);
 	
 	
+}
+function Interact_createMPRRangeGroup(mprmin,mprmax){
+	var range = {min:mprmin , max:mprmax};
+	new_group = createPatientGroup("MPRGroup ("+ range.min + " < MPR <="+range.max+")",g_colorPal(group_numberofGroups));			
+	new_group = constructInitData(new_group,"MPRrange",range);
+		
+
+
+//		AddGrouptoUI(groupname,color,filter)
+	AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
+
+	//update group to each visualization
+
+		updateAllChart(new_group);		 
+	return new_group;
 }
 function Quick_createGroupByAge() {
 	var ageRange = [ {min:0 , max:20}, {min:21,max:40}];

@@ -1,13 +1,17 @@
 // JavaScript Document
   var group_numberofGroups=0;
   var GroupList=[];
- function AddGrouptoUI(groupname,color,filter) {
+ function AddGrouptoUI(groupname,color,filter,size) {
 	 var grouproot = document.getElementById('groups');
 	 var div_ = document.createElement("div");
 	 var div_child = document.createElement("div");
 	 var div_child2 = document.createElement("div");
 	 div_.className = 'GroupItemCSS';
 	 div_child.className = 'GroupNameCSS';
+	 console.log(size);
+	 if(size!=null) {
+		 div_child.style.width = (parseInt(size)+"%");
+	 }
 	 div_child.innerHTML = groupname;
 	 div_child.style.background=color;
 	 div_.appendChild(div_child);
@@ -333,7 +337,7 @@ function createLinechart(data_o,parentNodeID,flag,chartOption){
 	} else 	return ;
 	
 	
-	console.log(data_);
+	
 	var x_trans = d3.scale.linear()
     .domain([0, data_.length ])
     .range([0, width]);
@@ -352,7 +356,7 @@ function createLinechart(data_o,parentNodeID,flag,chartOption){
     .ticks(10, "d");
 	
 	if(flag=='appendGroup') {
-		console.log("#"+parentNodeID+"_svg"+" g"); 
+		
 		var svg = d3.select("#"+parentNodeID+"_svg"+" g");
 		var line = d3.svg.line()
  		   .x(function(d, i) { return x_trans(i); })
@@ -447,7 +451,7 @@ function createScatterchart(data_o,parentNodeID,flag,chartOption){
     height = chartOption.height - margin.top - margin.bottom;
 	
 	var x_trans = d3.scale.linear()
-    .domain([0, 780 ])
+    .domain([0, 870 ])
     .range([0, width]);
  
 	var y_trans = d3.scale.linear()
@@ -488,7 +492,7 @@ function createScatterchart(data_o,parentNodeID,flag,chartOption){
 		      .style("fill", data_o.color); 
 		
 	} else 	if(flag=='filter') {
-		console.log("#"+parentNodeID+"_svg"+" g"); 
+		
 		var svg = d3.select("#"+parentNodeID+"_svg"+" g");
 		
 		if(Filter.MPRFilter.enabled) {
@@ -548,9 +552,8 @@ function createScatterchart(data_o,parentNodeID,flag,chartOption){
       .style("text-anchor", "start")	
 	  .style("fill","goldenrod") 
       .text(yLabel); 
-	  console.log(xAttr);
-	  console.log(yAttr);
-	console.log(data_);
+	
+
  svg.selectAll(".dot")
       .data(data_)
     .enter().append("circle")

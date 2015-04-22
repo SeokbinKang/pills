@@ -200,7 +200,7 @@ $.getJSON('/data', function(data) {
 function createPatientGroup(name_,color_)
 {
 	group_numberofGroups++;
-	var g = {name : name_, id :group_numberofGroups ,  color : color_, stats : {mprRange : [] , csaRange : [] , cmgRange : [], mpr30 : []}, patientData : [] };
+	var g = {name : name_, id :group_numberofGroups ,  size : 0,  color : color_, stats : {mprRange : [] , csaRange : [] , cmgRange : [], mpr30 : []}, patientData : [] };
 	return g;
 }
 function constructInitData(data,conditionName,conditionValue) {
@@ -267,7 +267,7 @@ function constructInitData(data,conditionName,conditionValue) {
 		
 		//mpr30
 		
-		for(mpr30index =0; mpr30index < p.drug_details[drugIndex].mpr_30.length-1;mpr30index++)
+		for(mpr30index =0; mpr30index < p.drug_details[drugIndex].mpr_30.length-1 && mpr30index<30;mpr30index++)
 		{
 			if(data.stats.mpr30[mpr30index] == undefined) {
 				data.stats.mpr30[mpr30index] = {count : 0 , value : 0 , avg:0 };
@@ -282,6 +282,7 @@ function constructInitData(data,conditionName,conditionValue) {
 	{
 		data.stats.mpr30[j].avg = data.stats.mpr30[j].value / data.stats.mpr30[j].count;
 	}
+	data.size = 100*data.patientData.length/ g_rawdata.patients.length;
   return data;
 }
 function initialize() {
@@ -390,7 +391,7 @@ function Quick_createGroupByAge() {
 
 
 //		AddGrouptoUI(groupname,color,filter)
-		AddGrouptoUI(new_group.name,new_group.color,null);
+		AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
 
 	//update group to each visualization
 
@@ -410,7 +411,7 @@ function Quick_createGroupByGender() {
 		
 
 //		AddGrouptoUI(groupname,color,filter)
-		AddGrouptoUI(new_group.name,new_group.color,null);
+		AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
 
 	//update group to each visualization
 
@@ -436,7 +437,8 @@ function Quick_createGroupByDrug() {
 		
 
 //		AddGrouptoUI(groupname,color,filter)
-		AddGrouptoUI(new_group.name,new_group.color,null);
+		AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
+
 
 	//update group to each visualization
 

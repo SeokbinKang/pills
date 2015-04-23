@@ -302,7 +302,7 @@ function initialize() {
  // var d_mprovertime = GetData_MPR_over_TIME(null);
 
   w_view = $('#middleview').width();  
-  
+ 
 
  var o_chartoption = createChartOption(w_view ,400,"MPR","# of Patients",'MPR_DIST');
  createChartDiv('Chart_Bar_MPR_DISTRIBUTION');
@@ -374,9 +374,9 @@ function renewData() {
 	console.log('attemping renew data\n');
 
     console.log(	$( ".GraphViewCSS" ));
-    		
-	$( ".GraphViewCSS" ).remove();		
-	initialize();
+    $( ".GraphViewCSS" ).remove();		
+		
+	initialize()
 	//.remove(this);
 	
 	

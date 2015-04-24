@@ -68,10 +68,8 @@ class Drug:
 def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overlap=0):
     #read data
     f=file(fileName, 'r')
-    data=f.readlines()
-    f.close()
     patients={}#PatientID -> Patient, Patient.prscrp: DrugID -> [(StartDate, EndDate)], Patient.stats: DrugID -> value
-    for line in data:
+    for line in f:
         if line[-1]=='\n':
             line=line[0:-1]
         seg=line.split('\t')
@@ -137,7 +135,8 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
                     patients[seg[0]].prscrp[seg[1]].append(dates)
             else:
                 patients[seg[0]].prscrp[seg[1]].append(dates)
-
+    f.close()
+    
     #compute values
     for patientID, patient in patients.iteritems():
         for drugID, drugRecords in patient.prscrp.items():
@@ -413,7 +412,7 @@ def printDrugStats(drugStats, drugList):
         print 'MPR:'
         print drugStats[drugID].MPR
 
-def mergeFiles(fileList, mergedFileName='data/AceBetaDiur.txt', startDate=date(2007, 1, 1), endDate=date(2012, 1, 1)):
+def mergeFilesByDate(fileList, mergedFileName='data/AceBetaDiur.txt', startDate=date(2007, 1, 1), endDate=date(2012, 1, 1)):
     f=file(mergedFileName, 'w')
     for fileName in fileList:
         ff=file(fileName, 'r')
@@ -431,6 +430,64 @@ def mergeFiles(fileList, mergedFileName='data/AceBetaDiur.txt', startDate=date(2
                 f.write(line+'\n')
     f.close()
 
-#mergeFiles(fileList=['data/AceOnly.txt', 'data/BetaOnly.txt', 'data/DiurOnly.txt'], startDate=date(2008, 11, 1), endDate=date(2008, 12, 31))
-#process('data/AceBetaDiur.txt', drugList=['1', '3', '5'], overlap=0, gap=0)
+def getMedicationLength(fileList, medLenFileName='data/medLen.txt', sortedMedLenFileName='data/sortedMedLen.txt'):
+    f1=file(medLenFileName, 'w')
+    f2=file(sortedMedLenFileName, 'w')
+    medLens=[]
+    startDates={}
+    endDates={}
+    for fileName in fileList:
+        ff=file(fileName, 'r')
+        for line in ff:
+            if line[-1]=='\n':
+                line=line[0:-1]
+            seg=line.split('\t')
+            startSeg=seg[2].split('-')
+            endSeg=seg[3].split(' ')[0].split('-')
+            startDate=date(string.atoi(startSeg[0]), string.atoi(startSeg[1]), string.atoi(startSeg[2]))
+            endDate=date(string.atoi(endSeg[0]), string.atoi(endSeg[1]), string.atoi(endSeg[2]))
+            if seg[0] in startDates:
+                if startDate<startDates[seg[0]]:
+                    startDates[seg[0]]=startDate
+                if endDate>endDates[seg[0]]:
+                    endDates[seg[0]]=endDate
+            else:
+                startDates[seg[0]]=startDate
+                endDates[seg[0]]=endDate
+        ff.close()
+    for patientID in startDates:
+        medLen=(endDates[patientID]-startDates[patientID]).days
+        medLens.append(medLen)
+        f1.write(patientID+'\t'+str(medLen)+'\n')
+    f1.close()
+    medLens.sort()
+    for medLen in medLens:
+        f2.write(str(medLen)+'\n')
+    f2.close()
+
+def mergeFilesByMedLen(fileList, medLenFileName='data/medLen.txt', mergedFileName='data/AceBetaDiur.txt', medLenThreshold=30):
+    f1=file(medLenFileName, 'r')
+    medLens={}
+    for line in f1:
+        if line[-1]=='\n':
+            line=line[0:-1]
+        seg=line.split('\t')
+        medLen=string.atoi(seg[1])
+        if medLen>medLenThreshold:
+            medLens[seg[0]]=string.atoi(seg[1])
+    f1.close()
+    f2=file(mergedFileName, 'w')
+    for fileName in fileList:
+        ff=file(fileName, 'r')
+        for line in ff:
+            seg=line.split('\t')
+            if seg[0] in medLens:
+                f2.write(line)
+        ff.close()
+    f2.close()
+
+#mergeFilesByMedLen(fileList=['data/AceOnly.txt', 'data/BetaOnly.txt', 'data/DiurOnly.txt'], medLenThreshold=750)
+#getMedicationLength(['data/AceOnly.txt', 'data/BetaOnly.txt', 'data/DiurOnly.txt'])
+#mergeFilesByDate(fileList=['data/AceOnly.txt', 'data/BetaOnly.txt', 'data/DiurOnly.txt'], startDate=date(2008, 11, 1), endDate=date(2008, 12, 31))
+process('data/AceBetaDiur.txt', drugList=['1', '3', '5'], overlap=0, gap=0)
 

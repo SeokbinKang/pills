@@ -413,5 +413,24 @@ def printDrugStats(drugStats, drugList):
         print 'MPR:'
         print drugStats[drugID].MPR
 
-#process('data/sample_data.txt', drugList=['4', '5'], overlap=0, gap=0)
+def mergeFiles(fileList, mergedFileName='data/AceBetaDiur.txt', startDate=date(2007, 1, 1), endDate=date(2012, 1, 1)):
+    f=file(mergedFileName, 'w')
+    for fileName in fileList:
+        ff=file(fileName, 'r')
+        data=ff.readlines()
+        ff.close()
+        for line in data:
+            if line[-1]=='\n':
+                line=line[0:-1]
+            seg=line.split('\t')
+            startSeg=seg[2].split('-')
+            endSeg=seg[3].split(' ')[0].split('-')
+            itemStartDate=date(string.atoi(startSeg[0]), string.atoi(startSeg[1]), string.atoi(startSeg[2]))
+            itemEndDate=date(string.atoi(endSeg[0]), string.atoi(endSeg[1]), string.atoi(endSeg[2]))
+            if itemStartDate>=startDate and itemStartDate<=endDate and itemEndDate>=startDate and itemEndDate<=endDate:
+                f.write(line+'\n')
+    f.close()
+
+#mergeFiles(fileList=['data/AceOnly.txt', 'data/BetaOnly.txt', 'data/DiurOnly.txt'], startDate=date(2008, 11, 1), endDate=date(2008, 12, 31))
+#process('data/AceBetaDiur.txt', drugList=['1', '3', '5'], overlap=0, gap=0)
 

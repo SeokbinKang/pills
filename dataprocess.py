@@ -486,8 +486,31 @@ def mergeFilesByMedLen(fileList, medLenFileName='data/medLen.txt', mergedFileNam
         ff.close()
     f2.close()
 
+def mergeFilesByRandom(fileList, medLenFileName='data/medLen.txt', mergedFileName='data/Ace_Beta_Diur_10SamplingRate.txt', ratio=0.1):
+    f1=file(medLenFileName, 'r')
+    medLens={}
+    for line in f1:
+        if line[-1]=='\n':
+            line=line[0:-1]
+        seg=line.split('\t')
+        medLen=string.atoi(seg[1])
+        p=random.random()
+        if p<0.1:
+            medLens[seg[0]]=medLen
+    f1.close()
+    f2=file(mergedFileName, 'w')
+    for fileName in fileList:
+        ff=file(fileName, 'r')
+        for line in ff:
+            seg=line.split('\t')
+            if seg[0] in medLens:
+                f2.write(line)
+        ff.close()
+    f2.close()
+
+#mergeFilesByRandom(fileList=['data/AceOnly.txt', 'data/BetaOnly.txt', 'data/DiurOnly.txt'])
 #mergeFilesByMedLen(fileList=['data/AceOnly.txt', 'data/BetaOnly.txt', 'data/DiurOnly.txt'], medLenThreshold=750)
 #getMedicationLength(['data/AceOnly.txt', 'data/BetaOnly.txt', 'data/DiurOnly.txt'])
 #mergeFilesByDate(fileList=['data/AceOnly.txt', 'data/BetaOnly.txt', 'data/DiurOnly.txt'], startDate=date(2008, 11, 1), endDate=date(2008, 12, 31))
-process('data/AceBetaDiur.txt', drugList=['1', '3', '5'], overlap=0, gap=0)
+#process('data/Ace_Beta_Diur_10SamplingRate.txt', drugList=['1', '3', '5'], overlap=0, gap=0)
 

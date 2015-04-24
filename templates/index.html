@@ -1,33 +1,483 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" " http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd ">
-<html xmlns=" http://www.w3.org/1999/xhtml ">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Pills</title>
-<script src="http://code.jquery.com/jquery-1.5.js"></script>
-<script src="/static/js/pills.js"></script>
-<script type="text/javascript">
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="generator" content="HTML Tidy for Windows (vers 14 February 2006), see www.w3.org">
+    <script src="static/libs/jquery-2.1.1.js" type="text/javascript"></script>
+    <script src="static/libs/d3.v3.js" charset="utf-8" type="text/javascript"></script>
+    <script src="static/libs/chance.js" charset="utf-8" type="text/javascript"></script>
+    <script src="static/js/pills.js" type="text/javascript"></script>
+    <script src="http://code.jquery.com/jquery.js" type="text/javascript"></script>
+    <script src="static/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <meta charset="utf-8">
+    <title>
+      Pills v0.2 - Visualization of Drug Prescription Patterns
+    </title>
+    <!--The following script tag downloads a font from the Adobe Edge Web Fonts server for use within the web page. We recommend that you do not modify it.-->
 
-$(document).ready(function() {
+    <script type="text/javascript">
+var __adobewebfontsappname__="dreamweaver"
+    </script>
+    <script src="http://use.edgefonts.net/days-one:n4:default;holtwood-one-sc:n4:default.js" type="text/javascript"></script>
+    <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen" type="text/css">
+	<link href="static/css/pills.css" rel="stylesheet" type="text/css">
+  </head>
 
-    $('#getdata-button').live('click', function() {
-        $.getJSON('/data', function(data, status, jqXHR) {
-            console.log(data.patients.length);
-            text = "<ul>";
-            for (i = 0; i < data.patients.length; i++) { 
-               text = text + "<li>" + data.patients[i].patient_id + "</li>";
-            }
+  <body>
+  <nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#"></a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Visualization of Drug Prescription Patterns <span class="sr-only">(current)</span></a></li>
+        <li><a href="#">Help</a></li>   
+		<li><a href="#">Contact us</a></li> 		
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div>
+</nav>
+
+  <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-3" id="leftcontrol">
+			<div class="panel panel-default">
+				<div class="panel-heading"> Quick Start</div>
+				<div class="panel-body">
+					
+					<button type="button" class="btn btn-default btn-lg" onClick="Quick_createGroupByDrug();">
+						  <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>  Drug Analysis
+                    </button>
+                    <br><br>
+                    This automatically groups the patients according to their dominant prescription drugID.
+                    <br>
+
+                    <hr>
+                    
+					<button type="button" class="btn btn-default btn-lg" onClick="Quick_createGroupByGender();">
+						  <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>  Gender Analysis
+                    </button>
+                    <br><br>
+                    This automatically groups the patients according to their gender.
+                    <br><hr>		
+                    
+                    <button type="button" class="btn btn-default btn-lg" onClick="Quick_createGroupByAge();">
+						  <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>  Age Analysis
+                    </button>
+                    <br><br>
+                    This automatically groups the patients according to their age.
+                    <br><hr>		
+					
+					
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading"> Data Smoothing</div>
+				<div class="panel-body"> 
+					<form method="post">
+						<fieldset>
+							<legend><b>Smooth Gaps</b></legend>
+							<p>Any gap whose length is smaller than the threshold is removed so that episodes before and after the gaps form a new episode</p>
+							
+							<!-- <label for="checkbox">
+							<input type="checkbox"  name="a" value="aa" />
+							Enable Filter
+							</label> -->
+							<p class="note">Threshold(days) 
+							<input id="DF_gaps" type="range" min="0" max="120" step='5' value='0' />
+							<span id="DF_gaps_currentValue">0</span></p>
+						</fieldset>
+					</form>
+					<form method="post">
+						<fieldset>
+							<legend><b>Smooth Overlaps </b></legend>
+							<p>Any overlap whose length is greater than the threshold is moved/added to the folling episode</p>
+							<!-- <br>
+							<input type="checkbox" name="a" value="aa" />
+							Enable Filter</p> -->
+							<p class="note">Threshold(days) 
+							<input id="DF_overlaps" type="range" min="0" max="120" step='5' value='0' />
+							<span id="DF_overlaps_currentValue">0</span></p>          
+						</fieldset>
+					</form>
+				</div>    
+			</div>
+            <div class="panel-heading"> Data Filtering</div>
+				<div class="panel-body">
+					<form method="post">
+						<fieldset>
+								<legend><b>Measures</b></legend>
+								<input type="checkbox" name="a" value="aa" />MPR(Medication Possession Rate) <br />
+								<input type="checkbox" name="b" value="bb" />CSA(Continuous single-interval medication availability)<br />
+								<input type="checkbox" name="c" value="cc" />CMG (continuous multiple-interval medication gaps)<br />
+						</fieldset>
+					</form>
+					<form method="post">
+						<fieldset>
+							<legend><b>Drugs</b></legend>
+							<input type="checkbox" name="a" value="aa" />ABC <br />
+							<input type="checkbox" name="b" value="bb" />DEF<br />
+							<input type="checkbox" name="c" value="cc" />OPP <br />   
+						</fieldset>
+					</form>
+					<form method="post">
+						<fieldset>
+							<legend><b>Gender</b></legend>
+							<input type="checkbox" name="a" value="aa" />Male <br />
+							<input type="checkbox" name="b" value="bb" />Female<br />      
+						</fieldset>
+					</form>
+				</div>
+			<div class="panel panel-default">
+				<div class="panel-heading"> Data Setting</div>
+				<div class="panel-body"> 
+					<form method="post">
+						<fieldset>
+							<legend><b>Data Source</b></legend>
+							<input type="checkbox" name="a" value="aa" />Dataset name 1 (loaded)<br />
+							<input type="checkbox" name="b" value="bb" />Dataset name 2 (loaded)<br />
+							<input type="checkbox" name="c" value="cc" />Import a new dataset<br />
+						</fieldset>
+					</form>
+					<form method="post">
+						<fieldset>
+							<legend><b>Preprocessing</b></legend>
+							<input type="checkbox" name="a" value="aa" />Using raw data<br />
+							<input type="checkbox" name="b" value="bb" />Preprocessing preset A<br />
+							<input type="checkbox" name="c" value="cc" />Preprocessign preset B <br />
+							<input type="checkbox" name="c" value="cc" />Create a new preprocessing prest<br />                   
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
+	
+		<div class="col-md-6 " id="middleview">
+			<div class="panel panel-default">
+				<div class="panel-heading" id="middleHeading">Distribution</div>
+			</div>
+		</div>
+		<div class="col-md-3 " id="rightcontrol">
+			<div class="panel panel-default">
+				<div class="panel-heading" > Data Group</div>
+				<div class="managingCSS" id="groups">
+			</div>
+			</div>
+		</div>
+	</div>
+
+  <script>
+  function createChartDiv(id_) {
+	 ("div1");
+	  var root =  document.getElementById('middleview');
+	  var div = document.createElement('div');
+	  div.id = id_;
+	  div.className="GraphViewCSS";
+	  root.appendChild(div);
+	  
+	  //<div class="GraphViewCSS" id="GraphView"  ></div>
+//   <div class="GraphViewCSS" id="GraphView_Time"  ></div>
+//   <div class="GraphViewCSS" id="GraphView_Period"  ></div>
+  }
+  </script>	
+  <script>
+  var w_view
+  var g_rawdata;
+  var g_data;
+  var g_colorPal = d3.scale.category10().domain(d3.range(0,10));
+$.getJSON('/data', function(data) {     
+			g_rawdata=data;
+			initialize();
+  });
+  
+function createPatientGroup(name_,color_)
+{
+	group_numberofGroups++;
+	var g = {name : name_, id :group_numberofGroups ,  size : 0,  color : color_, stats : {mprRange : [] , csaRange : [] , cmgRange : [], mpr30 : []}, patientData : [] };
+	return g;
+}
+function constructInitData(data,conditionName,conditionValue) {
+
+
+
+   var Nrange=20;  //MPR range count
+	
+  for (i=0;i<=Nrange;i++){
+    data.stats.mprRange[i]={range : i/Nrange , count : 0};
+     data.stats.csaRange[i]={range : i/Nrange , count : 0};
+     data.stats.cmgRange[i]={range : i/Nrange , count : 0};
+  }
+  var numPatient=-1;
+  for (i = 0; i < g_rawdata.patients.length; i++) { 
+  
+  		//only take dominant drug
+		var p = g_rawdata.patients[i];
+		var periodMax=0;
+		var drugIndex=-1;
+		if(p.drug_details.length==0) continue;
+		for(j=0;j<p.drug_details.length;j++){
+			if(p.drug_details[j].total_period>periodMax) {
+				periodMax=p.drug_details[j].total_period;
+				drugIndex=j;
+			}
+		}
+		if(drugIndex==-1) continue;
+		if(conditionName=="drug_id") {
+			//console.log(p.drug_details[drugIndex].drug_id+"      "+conditionValue+"\n");
+			if(p.drug_details[drugIndex].drug_id!=conditionValue) continue;
+		} else if(conditionName=="gender") {
+			//console.log(p.drug_details[drugIndex].drug_id+"      "+conditionValue+"\n");
+			if(p.gender!=conditionValue) continue;
+		} else if(conditionName=="age") {
+			//console.log(p.drug_details[drugIndex].drug_id+"      "+conditionValue+"\n");
+			if(p.age<conditionValue.min || p.age>conditionValue.max) continue;
+		} else if(conditionName=="MPRrange") {
+			if(p.drug_details[drugIndex].mpr<=conditionValue.min || p.drug_details[drugIndex].mpr>conditionValue.max) continue;
+		}
+		numPatient++;
+		//patient data
+		data.patientData[numPatient] = new Object();
+   		data.patientData[numPatient].id = p.patient_id;		
+		data.patientData[numPatient].avgMPR = p.drug_details[drugIndex].mpr.toFixed(4);
+		data.patientData[numPatient].totalPeriod = p.drug_details[drugIndex].total_period;
+  		data.patientData[numPatient].dominantDrug = p.drug_details[drugIndex].drug_id;
+  		//statistical data
+		ival = (data.patientData[numPatient].avgMPR*Nrange) | 0; // range index
+		//if(ival>=Nrange) ival = Nrange-1;
+	//	data.stats.mprRange[ival].range = ival/Nrange
+		data.stats.mprRange[ival].count++;
+		
+		
+		//csa
+		ival = (p.drug_details[drugIndex].average_csa * Nrange) | 0;
+		if(ival>=Nrange) ival = Nrange-1;
+		//data.stats.csaRange[ival].range = ival/Nrange
+		data.stats.csaRange[ival].count++;
+		
+		//cmg
+		ival = (p.drug_details[drugIndex].avg_cmg * Nrange) | 0;
+		if(ival>=Nrange) ival = Nrange-1;
+		//data.stats.cmgRange[ival].range = ival/Nrange
+		data.stats.cmgRange[ival].count++;
+		
+		//mpr30
+		
+		for(mpr30index =0; mpr30index < p.drug_details[drugIndex].mpr_30.length-1 && mpr30index<30;mpr30index++)
+		{
+			if(data.stats.mpr30[mpr30index] == undefined) {
+				data.stats.mpr30[mpr30index] = {count : 0 , value : 0 , avg:0 };
+			} 
+			data.stats.mpr30[mpr30index].count++;
+			data.stats.mpr30[mpr30index].value +=  p.drug_details[drugIndex].mpr_30[mpr30index];
+			
+		}		
+  
+  }	
+	for(j =0; j<data.stats.mpr30.length;j++)
+	{
+		data.stats.mpr30[j].avg = data.stats.mpr30[j].value / data.stats.mpr30[j].count;
+	}
+	data.size = 100*data.patientData.length/ g_rawdata.patients.length;
+  return data;
+}
+function initialize() {
+	g_data = createPatientGroup("default",'#E6E6FA');
+	g_data = constructInitData(g_data);
+
+  //construct g_data;
+
+
+	  
+ // var g_ranData = GetRandomMPRData();
+
+//  var d_rangenfrequency = ParseData_MPRRange(g_ranData.MPRALL);
+ // var d_mprovertime = GetData_MPR_over_TIME(null);
+
+  w_view = $('#middleview').width();  
  
-            text = text + "</ul>";
+
+ var o_chartoption = createChartOption(w_view ,400,"MPR","# of Patients",'MPR_DIST');
+ createChartDiv('Chart_Bar_MPR_DISTRIBUTION');
+ createbarChart(g_data,"Chart_Bar_MPR_DISTRIBUTION", 'new',o_chartoption); 
  
-            $('#showdata').html(text);
+ 
+ o_chartoption = createChartOption(w_view,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');
+ createChartDiv('Chart_Line_MPR_overMONTH');  
+ createLinechart(g_data,"Chart_Line_MPR_overMONTH",'new',o_chartoption);
+ 
+ var o_chartoption = createChartOption(w_view ,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
+ createChartDiv('Chart_Scatter_MPR_overMONTH'); 
+ createScatterchart(g_data,"Chart_Scatter_MPR_overMONTH", 'new',o_chartoption);
+ 
+ 
+ o_chartoption = createChartOption(w_view ,400,"CSA","# of Patients",'CSA_DIST');
+ createChartDiv('Chart_Bar_CSA_DISTRIBUTION');
+ createbarChart(g_data,"Chart_Bar_CSA_DISTRIBUTION", 'new',o_chartoption);
+ 
+ o_chartoption = createChartOption(w_view ,400,"CMG","# of Patients",'CMG_DIST');
+ createChartDiv('Chart_Bar_CMG_DISTRIBUTION');
+ createbarChart(g_data,"Chart_Bar_CMG_DISTRIBUTION", 'new',o_chartoption);
+ 
+ //createLinechart(d_mprovertime,"GraphView_Period",'new','all',o_chartoption);
+console.log("initialized\n");
+console.log(g_data);
+console.log(g_rawdata);
+//Quick_createGroupByDrug();
+// 
+  }
+  
+$(function(){
+
+    var currentValue = $('#DF_gaps_currentValue');
+
+    $('#DF_gaps').change(function(){
+        currentValue.html(this.value);
+		//call data reset
+		 $.getJSON('/data', {           
+              gap: this.value
+            },
+            function(data) {
+            g_rawdata = data;
+			renewData();			
         });
     });
-});
+    //$('#DF_gaps').change();
 
-</script>
-</head>
-<body>
-<a href="#" id="getdata-button">Get Patients ids</a>
-<div id="showdata"></div>
+});
+$(function(){
+
+    var currentValue = $('#DF_overlaps_currentValue');
+
+    $('#DF_overlaps').change(function(){
+        currentValue.html(this.value);
+		//call data reset
+		 $.getJSON('/data', {           
+              overlap: this.value
+            },
+            function(data) {
+            g_rawdata = data;
+			renewData();			
+        });
+    });
+    //$('#DF_gaps').change();
+
+});
+function renewData() {
+	console.log('attemping renew data\n');
+
+    console.log(	$( ".GraphViewCSS" ));
+    $( ".GraphViewCSS" ).remove();		
+		
+	initialize()
+	//.remove(this);
+	
+	
+}
+function Interact_createMPRRangeGroup(mprmin,mprmax){
+	var range = {min:mprmin , max:mprmax};
+	new_group = createPatientGroup("MPRGroup ("+ range.min + " < MPR <="+range.max+")",g_colorPal(group_numberofGroups));			
+	new_group = constructInitData(new_group,"MPRrange",range);
+		
+
+
+//		AddGrouptoUI(groupname,color,filter)
+	AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
+
+	//update group to each visualization
+
+		updateAllChart(new_group);		 
+	return new_group;
+}
+function Quick_createGroupByAge() {
+	var ageRange = [ {min:0 , max:20}, {min:21,max:40}];
+	
+	for(var i=0;i<ageRange.length;i++)
+	{
+		
+		var range = ageRange[i];	
+	//form patient group for each drug
+		new_group = createPatientGroup("AgeGroup ("+ range.min + " <= age <="+range.max+")",g_colorPal(group_numberofGroups));			
+		new_group = constructInitData(new_group,"age",range);
+		
+
+
+//		AddGrouptoUI(groupname,color,filter)
+		AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
+
+	//update group to each visualization
+
+		updateAllChart(new_group);		 
+	}
+	
+}
+function Quick_createGroupByGender() {
+	var genderL = ["male","female"];
+	var idx=0;
+	for(var gen in genderL){		
+
+		
+	//form patient group for each drug
+		new_group = createPatientGroup("GenderGroup (gender="+gen+")",g_colorPal(group_numberofGroups));			
+		new_group = constructInitData(new_group,"gender",idx);
+		
+
+//		AddGrouptoUI(groupname,color,filter)
+		AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
+
+	//update group to each visualization
+
+		updateAllChart(new_group);		 
+		idx++;
+		
+	}
+}
+function Quick_createGroupByDrug() {
+	//create comprehensive groups with different drugs. ( dual/triple Therapy is not considered)
+
+	var drugNameList =[];
+	//get the list of drug
+	var new_group;
+	
+	for(var drug in g_rawdata.drugs){
+		var drugname = String(drug);
+
+		
+	//form patient group for each drug
+		new_group = createPatientGroup("DrugGroup (drugID="+drugname+")",g_colorPal(group_numberofGroups));			
+		new_group = constructInitData(new_group,"drug_id",drugname);
+		
+
+//		AddGrouptoUI(groupname,color,filter)
+		AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
+
+
+	//update group to each visualization
+
+		updateAllChart(new_group);		 
+		
+	}
+
+}
+function updateAllChart(new_group){
+	
+	var o_chartoption = createChartOption(w_view,400,"MPR","# of Patients",'MPR_DIST');
+		 createbarChart(new_group,"Chart_Bar_MPR_DISTRIBUTION", 'appendGroup',o_chartoption); 
+		 
+		 o_chartoption = createChartOption(w_view,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');		
+		 createLinechart(new_group,"Chart_Line_MPR_overMONTH",'appendGroup',o_chartoption);
+		 
+		  var o_chartoption = createChartOption(w_view,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
+		 createScatterchart(new_group,"Chart_Scatter_MPR_overMONTH", 'appendGroup',o_chartoption);
+}
+  </script>
+</div>
 </body>
 </html>

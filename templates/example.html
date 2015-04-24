@@ -10,9 +10,14 @@
 $(document).ready(function() {
 
     $('#getdata-button').live('click', function() {
-        $.getJSON('/data', function(data, status, jqXHR) {
-            console.log(data.patients.length);
+        $.getJSON('/data', {
+            drugList: "[41, 42]",
+            overlap: "0",
+              gap: "1"
+            },
+            function(data) {
             text = "<ul>";
+
             for (i = 0; i < data.patients.length; i++) { 
                text = text + "<li>" + data.patients[i].patient_id + "</li>";
             }

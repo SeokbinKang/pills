@@ -300,12 +300,46 @@ var yAxis = d3.svg.axis()
 			var lastArrayRect = lastgroup_DOM.getElementsByTagName('rect');
 			console.log(lastArrayRect);
 			console.log(lastArrayRect.length);
+			
+
 			x.domain(data_.map(function(d) {  return d[xAttr]; }));
 			
 			y.domain([0,maxFrequency+10]);
-				  
+
+			var lastY = [];
+			if(data_o.id>2) {
+				for(i=0;i<lastArrayRect.length;i++)
+				{
+					lastY[i] = y(0) - lastArrayRect[i].getAttribute('y');
+				}				
+			} else {
+				for(i=0;i<lastArrayRect.length;i++)
+				{
+					lastY[i] = 0;
+				}
+			}
+
+						console.log(lastY);				  
 		  	svg = d3.select("#"+parentNodeID+"_svg"+" g");
 
+				svg = svg.append("g")
+				//    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+					//.attr("groupID",data_.id);
+					.attr("id",parentNodeID+"_svg"+"_group"+data_o.id)
+					.attr("groupID","group"+data_o.id);
+		
+	 	    svg.selectAll(".bar")
+	 	       .data(data_)
+		    .enter().append("rect")
+	    	  .attr("class", "bardefault")
+			  .style("fill",data_o.color)
+		      .attr("x", function(d) { return (x(d[xAttr])).toFixed(0);+(parseInt(data_o.id)-2)*x.rangeBand()/2; })
+		      .attr("id", function(d) { return "bar"+d[xAttr]; })
+		      .attr("width", x.rangeBand())
+		      .attr("y", function(d,i) { 	   
+				  return (y(d[yAttr])).toFixed(0) - lastY[i];; 
+				  })
+    		  .attr("height", function(d) {	  return height - (y(d[yAttr])).toFixed(0);; })	; 
 			
 	}
 		

@@ -601,15 +601,43 @@ var line = d3.svg.line()
 	.interpolate("basis");
 	;
 	
-var path = svg.append("g")
-	    .attr("clip-path","all")
-	  .append("path")
+var group_= svg.append("g")
+	    .attr("clip-path","all");
+var path=	group_.append("path")
 	    .datum(data_)
 	    .attr("d", line)
 		.style("fill", "none")
 		.style("stroke",color_)
 		.style("stroke-width",3);
 	//	.style("visibility", show);	
+
+			
+var maxCount=0;
+for(i=0;i<data_.length;i++){
+	if(data_[i].count>maxCount) maxCount=data_[i].count;
+}
+
+var y_trans_under = d3.scale.linear()
+	    .domain([0, maxCount*3])
+	    .range([ 0, height]);
+
+group_.selectAll(".bar")
+      .data(data_)
+    .enter().append("rect")
+      .attr("x", function(d,i) { return x_trans(i); }) 
+      .attr("width", (x_trans(1)-x_trans(0))-1)
+      .attr("y", function(d,i) { return  height-y_trans_under(d.count); } )
+      .attr("height", function(d) {   return y_trans_under(d.count); })
+	  .style("fill",color_)
+	  	;
+
+group_.append("text")     
+      .attr("y",height*0.66)
+	  .attr("x",width*0.8)
+      .style("text-anchor", "middle")	
+	  .style("fill","goldenrod") 
+      .text("Population for Monthly MPR");	
+	  
 	return path;
 
 }
@@ -740,7 +768,7 @@ function createScatterchart(data_o,parentNodeID,flag,chartOption){
       .attr("cx",function(d, i) { return x_trans(d[xAttr]); })
       .attr("cy",function(d, i) { return y_trans(d[yAttr]); })
 	  .attr("id",function(d,i) { return "dot"+i;})
-      .style("fill", '#E6E6FA'); 
+      .style("fill", color_); 
 	
 
 	}	

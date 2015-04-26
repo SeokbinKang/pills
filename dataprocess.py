@@ -486,7 +486,7 @@ def mergeFilesByMedLen(fileList, medLenFileName='data/medLen.txt', mergedFileNam
         ff.close()
     f2.close()
 
-def mergeFilesByRandom(fileList, medLenFileName='data/medLen.txt', mergedFileName='data/Ace_Beta_Diur_10SamplingRate.txt', ratio=0.1):
+def mergeFilesByRandom(fileList, medLenFileName='data/medLen.txt', mergedFileName='data/Ace_Beta_Diur_3SamplingRate.txt', ratio=0.03):
     f1=file(medLenFileName, 'r')
     medLens={}
     for line in f1:
@@ -495,7 +495,7 @@ def mergeFilesByRandom(fileList, medLenFileName='data/medLen.txt', mergedFileNam
         seg=line.split('\t')
         medLen=string.atoi(seg[1])
         p=random.random()
-        if p<0.1:
+        if p<ratio:
             medLens[seg[0]]=medLen
     f1.close()
     f2=file(mergedFileName, 'w')

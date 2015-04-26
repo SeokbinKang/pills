@@ -14,6 +14,7 @@ parser.add_argument('ageMax', type=int, help='Invalid number')
 parser.add_argument('gap', type=int, help='Invalid number')
 parser.add_argument('overlap', type=int, help='Invalid number')
 parser.add_argument('drugList', type=list, help='Invalid list')
+parser.add_argument('fileName', type=str, help='Invalid file name')
 
 
 class Data(Resource):
@@ -37,12 +38,17 @@ class Data(Resource):
     if (args['overlap'] is not None):
       overlap = args['overlap']
 
-    drugList = ['4', '5']
+    fileName = 'data/Ace_Beta_Diur_10SamplingRate.txt'
+    if (args['fileName'] is not None):
+      fileName = args['fileName']
+
+
+    drugList = ['1', '3', '5']
     if (args['drugList'] is not None):
       drugList = args['drugList']
       drugList = "".join(drugList)
 
-    patients, drugStats = dataprocess.process(fileName = 'data/sample_data.txt', drugList = drugList, overlap = overlap, gap = gap, ageMin = ageMin, ageMax = ageMax)
+    patients, drugStats = dataprocess.process(fileName = fileName, drugList = drugList, overlap = overlap, gap = gap, ageMin = ageMin, ageMax = ageMax)
 
     patientsObj = dataprocess.patientsJSON(patients)
     drugsObj = dataprocess.drugsJSON(drugStats, drugList)

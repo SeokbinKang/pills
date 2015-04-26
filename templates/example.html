@@ -10,11 +10,11 @@
 $(document).ready(function() {
 
     $('#getdata-button').live('click', function() {
-        $.getJSON('/data', {
-            drugList: "[41, 42]",
-            overlap: "0",
-              gap: "1"
-            },
+        $.getJSON('/data', //{
+           // drugList: "[1, 3, 5]",
+            //overlap: "0",
+            //  gap: "1"
+           // },
             function(data) {
             text = "<ul>";
 

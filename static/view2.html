@@ -309,7 +309,7 @@ function initialize() {
  createbarChart(g_data,"Chart_Bar_MPR_DISTRIBUTION", 'new',o_chartoption); 
  
  
- o_chartoption = createChartOption(w_view,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');
+ o_chartoption = createChartOption(w_view,400,"Time (Months from the start of medication) ","Monthly MPR",'MPR_over_MONTH');
  createChartDiv('Chart_Line_MPR_overMONTH');  
  createLinechart(g_data,"Chart_Line_MPR_overMONTH",'new',o_chartoption);
  
@@ -370,113 +370,6 @@ $(function(){
     //$('#DF_gaps').change();
 
 });
-function renewData() {
-	console.log('attemping renew data\n');
-
-    console.log(	$( ".GraphViewCSS" ));
-    $( ".GraphViewCSS" ).remove();		
-		
-	initialize()
-	//.remove(this);
-	
-	
-}
-function Interact_createMPRRangeGroup(mprmin,mprmax){
-	var range = {min:mprmin , max:mprmax};
-	new_group = createPatientGroup("MPRGroup ("+ range.min + " < MPR <="+range.max+")",g_colorPal(group_numberofGroups));			
-	new_group = constructInitData(new_group,"MPRrange",range);
-		
-
-
-//		AddGrouptoUI(groupname,color,filter)
-	AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
-
-	//update group to each visualization
-
-		updateAllChart(new_group);		 
-	return new_group;
-}
-function Quick_createGroupByAge() {
-	var ageRange = [ {min:0 , max:20}, {min:21,max:40}];
-	
-	for(var i=0;i<ageRange.length;i++)
-	{
-		
-		var range = ageRange[i];	
-	//form patient group for each drug
-		new_group = createPatientGroup("AgeGroup ("+ range.min + " <= age <="+range.max+")",g_colorPal(group_numberofGroups));			
-		new_group = constructInitData(new_group,"age",range);
-		
-
-
-//		AddGrouptoUI(groupname,color,filter)
-		AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
-
-	//update group to each visualization
-
-		updateAllChart(new_group);		 
-	}
-	
-}
-function Quick_createGroupByGender() {
-	var genderL = ["male","female"];
-	var idx=0;
-	for(var gen in genderL){		
-
-		
-	//form patient group for each drug
-		new_group = createPatientGroup("GenderGroup (gender="+gen+")",g_colorPal(group_numberofGroups));			
-		new_group = constructInitData(new_group,"gender",idx);
-		
-
-//		AddGrouptoUI(groupname,color,filter)
-		AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
-
-	//update group to each visualization
-
-		updateAllChart(new_group);		 
-		idx++;
-		
-	}
-}
-function Quick_createGroupByDrug() {
-	//create comprehensive groups with different drugs. ( dual/triple Therapy is not considered)
-
-	var drugNameList =[];
-	//get the list of drug
-	var new_group;
-	
-	for(var drug in g_rawdata.drugs){
-		var drugname = String(drug);
-
-		
-	//form patient group for each drug
-		new_group = createPatientGroup("DrugGroup (drugID="+drugname+")",g_colorPal(group_numberofGroups));			
-		new_group = constructInitData(new_group,"drug_id",drugname);
-		
-
-//		AddGrouptoUI(groupname,color,filter)
-		AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
-
-
-	//update group to each visualization
-
-		updateAllChart(new_group);		 
-		
-	}
-
-}
-function updateAllChart(new_group){
-	
-	var o_chartoption = createChartOption(w_view,400,"MPR","# of Patients",'MPR_DIST');
-		 createbarChart(new_group,"Chart_Bar_MPR_DISTRIBUTION", 'appendGroup',o_chartoption); 
-		 
-		 o_chartoption = createChartOption(w_view,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');		
-		 createLinechart(new_group,"Chart_Line_MPR_overMONTH",'appendGroup',o_chartoption);
-		 
-		  var o_chartoption = createChartOption(w_view,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
-		 createScatterchart(new_group,"Chart_Scatter_MPR_overMONTH", 'appendGroup',o_chartoption);
-}
   </script>
 </div>
 </body>

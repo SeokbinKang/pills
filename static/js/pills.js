@@ -1,6 +1,115 @@
 // JavaScript Document
   var group_numberofGroups=0;
   var GroupList=[];
+  
+  
+function renewData() {
+	console.log('attemping renew data\n');
+
+    console.log(	$( ".GraphViewCSS" ));
+    $( ".GraphViewCSS" ).remove();		
+		
+	initialize()
+	//.remove(this);
+	
+	
+}
+function Interact_createMPRRangeGroup(mprmin,mprmax){
+	var range = {min:mprmin , max:mprmax};
+	new_group = createPatientGroup("MPRGroup ("+ range.min + " < MPR <="+range.max+")",g_colorPal(group_numberofGroups));			
+	new_group = constructInitData(new_group,"MPRrange",range);
+		
+
+
+//		AddGrouptoUI(groupname,color,filter)
+	AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
+
+	//update group to each visualization
+
+		updateAllChart(new_group);		 
+	return new_group;
+}
+function Quick_createGroupByAge() {
+	var ageRange = [ {min:0 , max:20}, {min:21,max:40}];
+	
+	for(var i=0;i<ageRange.length;i++)
+	{
+		
+		var range = ageRange[i];	
+	//form patient group for each drug
+		new_group = createPatientGroup("AgeGroup ("+ range.min + " <= age <="+range.max+")",g_colorPal(group_numberofGroups));			
+		new_group = constructInitData(new_group,"age",range);
+		
+
+
+//		AddGrouptoUI(groupname,color,filter)
+		AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
+
+	//update group to each visualization
+
+		updateAllChart(new_group);		 
+	}
+	
+}
+function Quick_createGroupByGender() {
+	var genderL = ["male","female"];
+	var idx=0;
+	for(var gen in genderL){		
+
+		
+	//form patient group for each drug
+		new_group = createPatientGroup("GenderGroup (gender="+gen+")",g_colorPal(group_numberofGroups));			
+		new_group = constructInitData(new_group,"gender",idx);
+		
+
+//		AddGrouptoUI(groupname,color,filter)
+		AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
+
+	//update group to each visualization
+
+		updateAllChart(new_group);		 
+		idx++;
+		
+	}
+}
+function Quick_createGroupByDrug() {
+	//create comprehensive groups with different drugs. ( dual/triple Therapy is not considered)
+
+	var drugNameList =[];
+	//get the list of drug
+	var new_group;
+	
+	for(var drug in g_rawdata.drugs){
+		var drugname = String(drug);
+
+		
+	//form patient group for each drug
+		new_group = createPatientGroup("DrugGroup (drugID="+drugname+")",g_colorPal(group_numberofGroups));			
+		new_group = constructInitData(new_group,"drug_id",drugname);
+		
+
+//		AddGrouptoUI(groupname,color,filter)
+		AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
+
+
+	//update group to each visualization
+
+		updateAllChart(new_group);		 
+		
+	}
+
+}
+function updateAllChart(new_group){
+	
+	var o_chartoption = createChartOption(w_view,400,"MPR","# of Patients",'MPR_DIST');
+		 createbarChart(new_group,"Chart_Bar_MPR_DISTRIBUTION", 'appendGroup',o_chartoption); 
+		 
+		 o_chartoption = createChartOption(w_view,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');		
+		 createLinechart(new_group,"Chart_Line_MPR_overMONTH",'appendGroup',o_chartoption);
+		 
+		  var o_chartoption = createChartOption(w_view,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
+		 createScatterchart(new_group,"Chart_Scatter_MPR_overMONTH", 'appendGroup',o_chartoption);
+}
  function AddGrouptoUI(groupname,color,filter,size) {
 	 var grouproot = document.getElementById('groups');
 	 var div_ = document.createElement("div");
@@ -8,7 +117,6 @@
 	 var div_child2 = document.createElement("div");
 	 div_.className = 'GroupItemCSS';
 	 div_child.className = 'GroupNameCSS';
-	 console.log(size);
 	 if(size!=null) {
 		 div_child.style.width = (parseInt(size)+"%");
 	 }
@@ -136,39 +244,70 @@ var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left")
     .ticks(10, "d");
+	
+	var grouping_type = "stack-up";
+	
 	if(flag=='appendGroup') {
-		
-		var svgg =document.getElementById(parentNodeID+"_svg");		
-		svgg = svgg.getElementsByTagName('g');
-		svgg=svgg[0];
 
-		maxFrequency = parseInt(svgg.getAttribute('maxFrequency'));
-
-		x.domain(data_.map(function(d) {  return d[xAttr]; }));
-		
-		y.domain([0,maxFrequency+10]);
-			  
-	  	svg = d3.select("#"+parentNodeID+"_svg"+" g");
-		
-
-		svg = svg.append("g")
-			//    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-				//.attr("groupID",data_.id);
-				.attr("groupID","group"+data_o.id);
-				
- 	    svg.selectAll(".bar")
- 	       .data(data_)
-	    .enter().append("rect")
-    	  .attr("class", "bardefault")
-		  .style("fill",data_o.color)
-	      .attr("x", function(d) { return x(d[xAttr])+(parseInt(data_o.id)-2)*x.rangeBand()/2; })
-	      .attr("id", function(d) { return "bar"+d[xAttr]; })
-	      .attr("width", x.rangeBand()/2)
-	      .attr("y", function(d) { return y(d[yAttr]); })
-    	  .attr("height", function(d) {	  return height - y(d[yAttr]); })	; 
+		if(grouping_type == "split" ) {
+			var svgg =document.getElementById(parentNodeID+"_svg");		
+			svgg = svgg.getElementsByTagName('g');
+			svgg=svgg[0];
+	
+			maxFrequency = parseInt(svgg.getAttribute('maxFrequency'));
+			
+			
+			
+	
+			x.domain(data_.map(function(d) {  return d[xAttr]; }));
+			
+			y.domain([0,maxFrequency+10]);
+				  
+		  	svg = d3.select("#"+parentNodeID+"_svg"+" g");
+			
+	
+			svg = svg.append("g")
+				//    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+					//.attr("groupID",data_.id);
+					.attr("id",parentNodeID+"_svg"+"_group"+data_o.id)
+					.attr("groupID","group"+data_o.id);
+					
+	 	    svg.selectAll(".bar")
+	 	       .data(data_)
+		    .enter().append("rect")
+	    	  .attr("class", "bardefault")
+			  .style("fill",data_o.color)
+		      .attr("x", function(d) { return (x(d[xAttr])).toFixed(0);+(parseInt(data_o.id)-2)*x.rangeBand()/2; })
+		      .attr("id", function(d) { return "bar"+d[xAttr]; })
+		      .attr("width", x.rangeBand()/2)
+		      .attr("y", function(d) { return (y(d[yAttr])).toFixed(0);; })
+    		  .attr("height", function(d) {	  return height - (y(d[yAttr])).toFixed(0);; })	; 
 	
 	
+		} else if (grouping_type == "stack-up") {
 		
+			var svgg =document.getElementById(parentNodeID+"_svg");		
+			svgg = svgg.getElementsByTagName('g');
+			svgg=svgg[0];
+			maxFrequency = parseInt(svgg.getAttribute('maxFrequency'));
+	
+						//retrieve the last bars' heights
+			var LastGroupID = "group"+(data_o.id-1);
+			var lastgroup_DOM =svgg.querySelector('#'+(parentNodeID+"_svg_"+LastGroupID));
+			console.log(svgg);
+			console.log('[groupID="'+LastGroupID+'"]');
+			console.log(lastgroup_DOM);
+			var lastArrayRect = lastgroup_DOM.getElementsByTagName('rect');
+			console.log(lastArrayRect);
+			console.log(lastArrayRect.length);
+			x.domain(data_.map(function(d) {  return d[xAttr]; }));
+			
+			y.domain([0,maxFrequency+10]);
+				  
+		  	svg = d3.select("#"+parentNodeID+"_svg"+" g");
+
+			
+	}
 		
 	} else {
 		
@@ -225,17 +364,18 @@ svg.append("g")
       .text(yLabel);
 	  
 var groupRoot = svg.append("g")		
+				.attr("id",parentNodeID+"_svg"+"_group"+data_o.id)
 				.attr("groupID","group"+data_o.id);
 				
   groupRoot.selectAll(".bar")
       .data(data_)
     .enter().append("rect")
       .attr("class", "bardefault")
-      .attr("x", function(d) { return x(d[xAttr]); })
+      .attr("x", function(d) { return (x(d[xAttr])).toFixed(0); })
       .attr("id", function(d) { return "bar"+d[xAttr]; })
       .attr("width", x.rangeBand())
-      .attr("y", function(d) { return y(d[yAttr]); })
-      .attr("height", function(d) { return height - y(d[yAttr]); })	;
+      .attr("y", function(d) { return (y(d[yAttr])).toFixed(0); })
+      .attr("height", function(d) { return height - (y(d[yAttr])).toFixed(0);; })	;
 	  
 	svg.call(brush);	   
 // Clear the previously-active brush, if any.
@@ -284,9 +424,7 @@ var groupRoot = svg.append("g")
 	min_=1000;
 	max_=-1;
 	var mprwidth = MprData[1].range- MprData[0].range;
-	console.log(MprData);
 	for(i=0;i<BarSelected.length;i++){  //why -10? idk.
-		console.log(i);
 		if(BarSelected[i]>0) {
 			if(MprData[i].range<min_) min_=MprData[i].range;
 			if(MprData[i].range>max_) max_=MprData[i].range;
@@ -299,7 +437,6 @@ var groupRoot = svg.append("g")
 //	var newFilter = createFilterOption(true,(min_-mprwidth).toFixed(2),max_.toFixed(2),this.getAttribute("measure"));
 	//if(min_==0) min_=-0.1;
 	var group_ = Interact_createMPRRangeGroup(min_,max_);
-	console.log(group_);
 
 	/*for(i=0;i<BarSelected.length-10;i++){
 		if(BarSelected[i]>0) {

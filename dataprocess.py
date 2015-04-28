@@ -239,6 +239,7 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
                     patient.avgOverlapLen[drugID]=sum(overlapLen)*1.0/len(overlapLen)
 
     #printPatients(patients)
+    #writePatients(patients)
 
     #collect stats
     drugStats={}
@@ -384,6 +385,15 @@ def printPatients(patients):
             print '\t\tAverage Gap Length: '+str(patient.avgGapLen[drugID])
             print '\t\tAverage Overlap Length: '+str(patient.avgOverlapLen[drugID])
 
+def writePatients(patients):
+    f=file('data/test.txt', 'w')
+    for patientID, patient in patients.items():
+        for drugID, drugRecords in patient.prscrp.items():
+            if patient.totalPeriod[drugID]>=750:
+                f.write(patientID+'\t'+drugID+'\n')
+                f.write('30-Day MPRs: '+str(patient.MPR30Day[drugID])+'\n')
+    f.close()
+
 def printDrugStats(drugStats, drugList):
     for drugID in drugList:
         print drugID
@@ -512,5 +522,5 @@ def mergeFilesByRandom(fileList, medLenFileName='data/medLen.txt', mergedFileNam
 #mergeFilesByMedLen(fileList=['data/AceOnly.txt', 'data/BetaOnly.txt', 'data/DiurOnly.txt'], medLenThreshold=750)
 #getMedicationLength(['data/AceOnly.txt', 'data/BetaOnly.txt', 'data/DiurOnly.txt'])
 #mergeFilesByDate(fileList=['data/AceOnly.txt', 'data/BetaOnly.txt', 'data/DiurOnly.txt'], startDate=date(2008, 11, 1), endDate=date(2008, 12, 31))
-#process('data/Ace_Beta_Diur_10SamplingRate.txt', drugList=['1', '3', '5'], overlap=0, gap=0)
+process('data/Ace_Beta_Diur_3SamplingRate.txt', drugList=['1', '3', '5'], overlap=0, gap=0)
 

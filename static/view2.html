@@ -306,25 +306,25 @@ function initialize() {
   w_view = $('#middleview').width();  
  
 
- var o_chartoption = createChartOption(w_view ,400,"MPR","# of Patients",'MPR_DIST');
+ var o_chartoption = createChartOption(w_view ,400,"Medication Posession Rate (MPR)","Number of Patients",'MPR_DIST');
  createChartDiv('Chart_Bar_MPR_DISTRIBUTION');
  createbarChart(g_data,"Chart_Bar_MPR_DISTRIBUTION", 'new',o_chartoption); 
  
  
- o_chartoption = createChartOption(w_view,400,"Time (Months from the start of medication) ","Monthly MPR",'MPR_over_MONTH');
+ o_chartoption = createChartOption(w_view,400,"Number of Medication Months","Medication Posession Rate (MPR)",'MPR_over_MONTH');
  createChartDiv('Chart_Line_MPR_overMONTH');  
  createLinechart(g_data,"Chart_Line_MPR_overMONTH",'new',o_chartoption);
  
- var o_chartoption = createChartOption(w_view ,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
+ var o_chartoption = createChartOption(w_view ,400,"Number of Medication Days","Medication Posession Rate (MPR)","MPR_over_TotalPeriod");
  createChartDiv('Chart_Scatter_MPR_overMONTH'); 
  createScatterchart(g_data,"Chart_Scatter_MPR_overMONTH", 'new',o_chartoption);
  
  
- o_chartoption = createChartOption(w_view ,400,"CSA","# of Patients",'CSA_DIST');
+ o_chartoption = createChartOption(w_view ,400,"Continuous Single-interval medication Availability (CSA)","Number of Patients",'CSA_DIST');
  createChartDiv('Chart_Bar_CSA_DISTRIBUTION');
  createbarChart(g_data,"Chart_Bar_CSA_DISTRIBUTION", 'new',o_chartoption);
  
- o_chartoption = createChartOption(w_view ,400,"CMG","# of Patients",'CMG_DIST');
+ o_chartoption = createChartOption(w_view ,400,"Continuous Multiple-interval Medication Gaps (CMG)","Number of Patients",'CMG_DIST');
  createChartDiv('Chart_Bar_CMG_DISTRIBUTION');
  createbarChart(g_data,"Chart_Bar_CMG_DISTRIBUTION", 'new',o_chartoption);
  

@@ -532,8 +532,9 @@ function createLinechart(data_o,parentNodeID,flag,chartOption){
     .scale(y_trans)
     .orient("left")
     .ticks(10, "d");
-	
+
 	if(flag=='appendGroup') {
+
 		
 		var svg = d3.select("#"+parentNodeID+"_svg"+" g");
 		var line = d3.svg.line()
@@ -550,6 +551,7 @@ function createLinechart(data_o,parentNodeID,flag,chartOption){
 			.style("fill", "none") //chance.integer({min: 0, max: 10})
 			.style("stroke",data_o.color)
 			.style("stroke-width",3);
+
 		
 		return path;
 		
@@ -594,12 +596,13 @@ function createLinechart(data_o,parentNodeID,flag,chartOption){
 	  .style("fill","goldenrod") 
       .text(yLabel); 
 
-	
+hData = data_;
+
+
 var line = d3.svg.line()
     .x(function(d, i) { return x_trans(i); })
     .y(function(d, i) { return y_trans(d[yAttr]);;})
 	.interpolate("basis");
-	;
 	
 var group_= svg.append("g")
 	    .attr("clip-path","all");
@@ -621,7 +624,56 @@ var y_trans_under = d3.scale.linear()
 	    .domain([0, maxCount*3])
 	    .range([ 0, height]);
 
-group_.selectAll(".bar")
+
+  var focus = svg.append("g")
+      .attr("class", "focus")
+      .style("display", "none");
+
+  focus.append("circle")
+      .attr("r", 4.5);
+
+  var toolTip = d3.select('body').append('div').attr('class', 'chart-tooltip');
+
+  focus.append("text")
+      .attr("x", 9)
+      .attr("dy", ".35em")
+
+  svg.append("rect")
+      .attr("class", "overlay")
+      .attr("width", width)
+      .attr("height", height)
+      .on("mouseover", function() { focus.style("display", null); toolTip.style("opacity", 0.7);})
+      .on("mouseout", function() { focus.style("display", "none"); toolTip.style("display", "none");})
+      .on("mousemove", mousemove);
+
+
+  function mousemove() {
+
+     var mouse = d3.mouse(this),
+            mouseX  = mouse[0],
+            mouseY  = mouse[1];
+
+    var x0 = x_trans.invert(mouseX);
+    x0 = Math.round(x0);
+
+
+    y_val = y_trans(hData[x0]['avg']);
+
+
+    focus.attr("transform", "translate(" + x_trans(x0) + "," + y_val + ")");
+
+    toolTip.style('display', null);
+        
+        //** Display tool tip
+        toolTip
+            .style('visibility', 'visible')
+            .style("left", (d3.event.pageX + 60 + "px"))
+            .style("top", (d3.event.pageY + "px"))
+        .text("Number of patients: " + hData[x0].count);
+  }
+
+
+/*group_.selectAll(".bar")
       .data(data_)
     .enter().append("rect")
       .attr("x", function(d,i) { return x_trans(i); }) 
@@ -636,7 +688,7 @@ group_.append("text")
 	  .attr("x",width*0.8)
       .style("text-anchor", "middle")	
 	  .style("fill","goldenrod") 
-      .text("Population for Monthly MPR");	
+      .text("Population for Monthly MPR");	*/
 	  
 	return path;
 

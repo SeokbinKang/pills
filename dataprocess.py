@@ -42,6 +42,7 @@ class Patient:
         #MPR
         self.MPR={}
         self.MPR30Day={}
+        self.MPRCI={}
         #gap and overlap
         self.gapOverlap={}
         self.avgGapLen={}
@@ -97,6 +98,7 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
                 patients[seg[0]].minCMG[drug]=0
                 patients[seg[0]].MPR[drug]=0
                 patients[seg[0]].MPR30Day[drug]=[]
+                patients[seg[0]].MPRCI[drug]=[]
                 patients[seg[0]].gapOverlap[drug]=[]
                 patients[seg[0]].avgGapLen[drug]=0
                 patients[seg[0]].avgOverlapLen[drug]=0
@@ -225,6 +227,18 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
                         if startDate<nextEndDate:
                             index+=1
                     patient.MPR30Day[drugID].append(supplyLen*1.0/interval)
+                #compute 30-day MPR CI
+                avgMPR30=0.0
+                if len(patient.MPR30Day[drugID])>0:
+                    avgMPR30=sum(patient.MPR30Day[drugID])*1.0/len(patient.MPR30Day[drugID])
+                stdErr=0.0
+                for i in range(len(patient.MPR30Day[drugID])):
+                    stdErr+=(patient.MPR30Day[drugID][i]-avgMPR30)*(patient.MPR30Day[drugID][i]-avgMPR30)
+                if len(patient.MPR30Day[drugID])>0:
+                    stdErr/=len(patient.MPR30Day[drugID])
+                stdErr=stdErr**0.5
+                patient.MPRCI[drugID].append(avgMPR30-1.96*stdErr)
+                patient.MPRCI[drugID].append(avgMPR30+1.96*stdErr)
                 #compute average gap and overlap lengths
                 gapLen=[]
                 overlapLen=[]
@@ -380,6 +394,7 @@ def printPatients(patients):
             print '\t\tMin CMG: '+str(patient.minCMG[drugID])
             print '\t\tMPR: '+str(patient.MPR[drugID])
             print '\t\t30-Day MPRs: '+str(patient.MPR30Day[drugID])
+            print '\t\t30-Day MPR CI: '+str(patient.MPRCI[drugID])
             print '\t\t30-Day Prescriptions: '+str(patient.day30[drugID])
             print '\t\t90-Day Prescriptions: '+str(patient.day90[drugID])
             print '\t\tAverage Gap Length: '+str(patient.avgGapLen[drugID])

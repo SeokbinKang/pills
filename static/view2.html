@@ -216,6 +216,7 @@ function constructInitData(data,conditionName,conditionValue) {
      data.stats.cmgRange[i]={range : i/Nrange , count : 0};
   }
   var numPatient=-1;
+
   for (i = 0; i < g_rawdata.patients.length; i++) { 
   
   		//only take dominant drug
@@ -223,6 +224,7 @@ function constructInitData(data,conditionName,conditionValue) {
 		var periodMax=0;
 		var drugIndex=-1;
 		if(p.drug_details.length==0) continue;
+		
 		for(j=0;j<p.drug_details.length;j++){
 			if(p.drug_details[j].total_period>periodMax) {
 				periodMax=p.drug_details[j].total_period;
@@ -241,8 +243,12 @@ function constructInitData(data,conditionName,conditionValue) {
 			if(p.age<conditionValue.min || p.age>conditionValue.max) continue;
 		} else if(conditionName=="MPRrange") {
 			if(p.drug_details[drugIndex].mpr<=conditionValue.min || p.drug_details[drugIndex].mpr>conditionValue.max) continue;
-		}
-		numPatient++;
+		} 
+		
+		if(p.drug_details[drugIndex].total_period>900) continue;
+		
+		
+ 		numPatient++;
 		//patient data
 		data.patientData[numPatient] = new Object();
    		data.patientData[numPatient].id = p.patient_id;		
@@ -291,8 +297,8 @@ function constructInitData(data,conditionName,conditionValue) {
 function initialize() {
 	//g_data = createPatientGroup("default",'#E6E6FA');
 	g_data = createPatientGroup("default",'#a6bddb');
-	
-	g_data = constructInitData(g_data);
+	var basePeriodFilter = { min : 0 , max:900};
+	g_data = constructInitData(g_data,"MedicationPeriod",basePeriodFilter);
 
   //construct g_data;
 

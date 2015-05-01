@@ -231,7 +231,7 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 
 
 var x = d3.scale.ordinal()
-    .rangeRoundBands([0, width], .1,0.2);
+    .rangeRoundBands([0, width] );
 
 var y = d3.scale.linear()
     .range([height, 0]);
@@ -709,7 +709,7 @@ function createScatterchart(data_o,parentNodeID,flag,chartOption){
     height = chartOption.height - margin.top - margin.bottom;
 	
 	var x_trans = d3.scale.linear()
-    .domain([0, 870 ])
+    .domain([0, 900 ])
     .range([0, width]);
  
 	var y_trans = d3.scale.linear()

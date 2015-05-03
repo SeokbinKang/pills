@@ -45,8 +45,8 @@ class Patient:
         self.MPRCI={}
         #gap and overlap
         self.gapOverlap={}
-        self.numGap=0
-        self.numOverlap=0
+        self.numGap={}
+        self.numOverlap={}
         self.avgGapLen={}
         self.avgOverlapLen={}
         #30-day and 90-day prescriptions
@@ -102,6 +102,8 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
                 patients[seg[0]].MPR30Day[drug]=[]
                 patients[seg[0]].MPRCI[drug]=[]
                 patients[seg[0]].gapOverlap[drug]=[]
+                patients[seg[0]].numGap[drug]=0
+                patients[seg[0]].numOverlap[drug]=0
                 patients[seg[0]].avgGapLen[drug]=0
                 patients[seg[0]].avgOverlapLen[drug]=0
                 patients[seg[0]].day30[drug]=0
@@ -253,8 +255,8 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
                     patient.avgGapLen[drugID]=sum(gapLen)*1.0/len(gapLen)
                 if len(overlapLen)>0:
                     patient.avgOverlapLen[drugID]=sum(overlapLen)*1.0/len(overlapLen)
-                patient.numGap=len(gapLen)
-                patient.numOverlap=len(overlapLen)
+                patient.numGap[drugID]=len(gapLen)
+                patient.numOverlap[drugID]=len(overlapLen)
 
     #printPatients(patients)
     #writePatients(patients)
@@ -404,8 +406,8 @@ def printPatients(patients):
             print '\t\t30-Day MPR CI: '+str(patient.MPRCI[drugID])
             print '\t\t30-Day Prescriptions: '+str(patient.day30[drugID])
             print '\t\t90-Day Prescriptions: '+str(patient.day90[drugID])
-            print '\t\t#Gaps: '+str(patient.numGap)
-            print '\t\t#Overlaps: '+str(patient.numOverlap)
+            print '\t\t#Gaps: '+str(patient.numGap[drugID])
+            print '\t\t#Overlaps: '+str(patient.numOverlap[drugID])
             print '\t\tAverage Gap Length: '+str(patient.avgGapLen[drugID])
             print '\t\tAverage Overlap Length: '+str(patient.avgOverlapLen[drugID])
 

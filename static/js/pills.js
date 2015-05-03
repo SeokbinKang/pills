@@ -145,13 +145,27 @@ function Quick_createGroupByDrug() {
 function updateAllChart(new_group){
 	
 	var o_chartoption = createChartOption(w_view,400,"MPR","# of Patients",'MPR_DIST');
-		 createbarChart(new_group,"Chart_Bar_MPR_DISTRIBUTION", 'appendGroup',o_chartoption); 
+	createbarChart(new_group,"Chart_Bar_MPR_DISTRIBUTION", 'appendGroup',o_chartoption); 
+	
+	o_chartoption = createChartOption(w_view ,400,"Total Medication Period (days)","Number of Patients",'MED_PERIOD_DIST');
+	 createbarChart(new_group,"Chart_Bar_MEDPERIOD_DISTRIBUTION", 'appendGroup',o_chartoption); 
 		 
-		 o_chartoption = createChartOption(w_view,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');		
-		 createLinechart(new_group,"Chart_Line_MPR_overMONTH",'appendGroup',o_chartoption);
+	o_chartoption = createChartOption(w_view,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');		
+	createLinechart(new_group,"Chart_Line_MPR_overMONTH",'appendGroup',o_chartoption);
 		 
-		  var o_chartoption = createChartOption(w_view,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
-		 createScatterchart(new_group,"Chart_Scatter_MPR_overMONTH", 'appendGroup',o_chartoption);
+	o_chartoption = createChartOption(w_view,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
+	createScatterchart(new_group,"Chart_Scatter_MPR_overMONTH", 'appendGroup',o_chartoption);
+	
+	 o_chartoption = createChartOption(w_view ,400,"The total number of gaps during medication","Number of Patients",'GAP_DIST');
+		
+	 createbarChart(new_group,"Chart_Bar_GAP_DISTRIBUTION", 'appendGroup',o_chartoption); 
+ 
+	 o_chartoption = createChartOption(w_view ,400,"The total number of overlaps during medication","Number of Patients",'OVERLAP_DIST');
+	
+	 createbarChart(new_group,"Chart_Bar_OVERLAP_DISTRIBUTION", 'appendGroup',o_chartoption); 
+ 
+	
+	
 }
  function AddGrouptoUI(groupname,color,filter,size) {
 	 var grouproot = document.getElementById('groups');
@@ -276,7 +290,23 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 		xLabel = cOption.xLabel;
 		yLabel = cOption.yLabel;
 		
-	}else 	return ;
+	} else if(cOption.type == 'GAP_DIST'){
+		
+		data_=data_o.stats.gapRange;
+		xAttr= 'range';
+		yAttr= 'count';
+		xLabel = cOption.xLabel;
+		yLabel = cOption.yLabel;
+		
+	} else if(cOption.type == 'OVERLAP_DIST'){
+		
+		data_=data_o.stats.overlapRange;
+		xAttr= 'range';
+		yAttr= 'count';
+		xLabel = cOption.xLabel;
+		yLabel = cOption.yLabel;
+		
+	} else 	return ;
 
 
 
@@ -384,7 +414,12 @@ var yAxis = d3.svg.axis()
 		    .enter().append("rect")
 	    	  .attr("class", "bardefault")
 			  .style("fill",data_o.color)
-		      .attr("x", function(d) { return (x(d[xAttr])).toFixed(0);+(parseInt(data_o.id)-2)*x.rangeBand()/2; })
+		    //  .attr("x", function(d) { return (x(d[xAttr])).toFixed(0);+(parseInt(data_o.id)-2)*x.rangeBand()/2; })
+			  .attr("x", function(d) { 
+			  		var t= parseInt(x(d[xAttr]));
+					t=t+x.rangeBand()/2;
+					return t;
+				 })
 		      .attr("id", function(d) { return "bar"+d[xAttr]; })
 		      .attr("width", x.rangeBand())
 		      .attr("y", function(d,i) { 	   

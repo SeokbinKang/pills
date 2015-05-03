@@ -219,7 +219,7 @@ function constructInitData(data,conditionName,conditionValue) {
 
    var Nrange=20;  //MPR range count
    var maxPeriod = 900;
-   var maxGaps_Overlaps = 100;
+   var maxGaps_Overlaps = 40;
   for (i=0;i<=Nrange;i++){
     data.stats.mprRange[i]={range : i/Nrange , count : 0};
      data.stats.csaRange[i]={range : i/Nrange , count : 0};
@@ -271,27 +271,35 @@ function constructInitData(data,conditionName,conditionValue) {
   		//statistical data
 		ival = (data.patientData[numPatient].avgMPR*Nrange) | 0; // range index
 		if(ival>=Nrange) ival = Nrange-1;
-	//	data.stats.mprRange[ival].range = ival/Nrange
 		data.stats.mprRange[ival].count++;
 		
 		
 		//csa
 		ival = (p.drug_details[drugIndex].average_csa * Nrange) | 0;
 		if(ival>=Nrange) ival = Nrange-1;
-		//data.stats.csaRange[ival].range = ival/Nrange
 		data.stats.csaRange[ival].count++;
 		
 		//cmg
 		ival = (p.drug_details[drugIndex].avg_cmg * Nrange) | 0;
 		if(ival>=Nrange) ival = Nrange-1;
-		//data.stats.cmgRange[ival].range = ival/Nrange
 		data.stats.cmgRange[ival].count++;
 		
 		//medication period
 		ival = (p.drug_details[drugIndex].total_period/maxPeriod * Nrange) | 0;
-		if(ival>=Nrange) ival = Nrange-1;
-		//data.stats.cmgRange[ival].range = ival/Nrange
+		if(ival>=Nrange) ival = Nrange-1;		
 		data.stats.periodRange[ival].count++;
+		
+		//# of gaps
+		ival = (p.drug_details[drugIndex].num_gaps/maxGaps_Overlaps * Nrange) | 0;
+		if(ival>=Nrange) ival = Nrange-1;		
+		data.stats.gapRange[ival].count++;
+		
+		
+		//# of gaps
+		ival = (p.drug_details[drugIndex].num_overlaps/maxGaps_Overlaps * Nrange) | 0;
+		if(ival>=Nrange) ival = Nrange-1;		
+		data.stats.overlapRange[ival].count++;
+		
 		
 		//mpr30
 		
@@ -348,6 +356,14 @@ function initialize() {
  var o_chartoption = createChartOption(w_view ,400,"Number of Medication Days","Medication Posession Rate (MPR)","MPR_over_TotalPeriod");
  createChartDiv('Chart_Scatter_MPR_overMONTH',o_chartoption); 
  createScatterchart(g_data,"Chart_Scatter_MPR_overMONTH", 'new',o_chartoption);
+ 
+ o_chartoption = createChartOption(w_view ,400,"The total number of gaps during medication","Number of Patients",'GAP_DIST');
+ createChartDiv('Chart_Bar_GAP_DISTRIBUTION');
+ createbarChart(g_data,"Chart_Bar_GAP_DISTRIBUTION", 'new',o_chartoption); 
+ 
+ o_chartoption = createChartOption(w_view ,400,"The total number of overlaps during medication","Number of Patients",'OVERLAP_DIST');
+ createChartDiv('Chart_Bar_OVERLAP_DISTRIBUTION');
+ createbarChart(g_data,"Chart_Bar_OVERLAP_DISTRIBUTION", 'new',o_chartoption); 
  
  
  

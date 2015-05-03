@@ -341,7 +341,9 @@ def patientsJSON(patients):
 
             drug["mpr_30_ci_lower"] = patient.MPRCI[drugID][0] if len(patient.MPRCI[drugID]) > 0 else 0
             drug["mpr_30_ci_upper"] = patient.MPRCI[drugID][1] if len(patient.MPRCI[drugID]) > 0 else 0
- 
+
+            drug["num_gaps"] = patient.numGap[drugID]
+            drug["num_overlaps"] = patient.numOverlap[drugID]
 
             drugsList.append(drug)
 
@@ -378,6 +380,8 @@ def drugsJSON(drugStats, drugList):
         drug['max_cmg'] = drugStats[drugID].maxCMG
         drug['min_cmg'] = drugStats[drugID].minCMG
         drug['mpr'] = drugStats[drugID].MPR
+        drug['num_gaps'] = drugStats[drugID].numGaps
+        drug['num_overlaps'] = drugStats[drugID].numOverlaps
 
         drugs[drugID] = drug
 

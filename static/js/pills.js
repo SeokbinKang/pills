@@ -461,8 +461,8 @@ var groupRoot = svg.append("g")
     .enter().append("rect")
       .attr("class", "bardefault")
       .attr("x", function(d) { 
-			var t= (x(d[xAttr])).toFixed(0);		
-			t=t-x.rangeBand()/2;						
+			var t= (x(d[xAttr])).toFixed(0);							
+			t=parseInt(t)+x.rangeBand()/2;						
 		  return t; }
 	  )
       .attr("id", function(d) { return "bar"+d[xAttr]; })

@@ -20,6 +20,7 @@ var __adobewebfontsappname__="dreamweaver"
     <script src="http://use.edgefonts.net/days-one:n4:default;holtwood-one-sc:n4:default.js" type="text/javascript"></script>
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen" type="text/css">
 	<link href="css/pills.css" rel="stylesheet" type="text/css">
+   	<link href="css/effect.css" rel="stylesheet" type="text/css">
   </head>
 
   <body>
@@ -175,14 +176,30 @@ var __adobewebfontsappname__="dreamweaver"
 	</div>
 
   <script>
-  function createChartDiv(id_) {
-	 ("div1");
+  function createChartDiv(id_,option_) {
+	  	 ("div1");
 	  var root =  document.getElementById('middleview');
 	  var div = document.createElement('div');
 	  div.id = id_;
 	  div.className="GraphViewCSS";
 	  root.appendChild(div);
 	  
+	  //create loading element
+	  var spin_ =  document.createElement('div');
+	  spin_.id = id_+"_loading";
+	  spin_.className = "spinner";
+	  for(var i=1;i<=5;i++){
+	  	  var cube1 =  document.createElement('div');
+		  cube1.className = "rect"+i;
+		  spin_.appendChild(cube1);
+		  
+	  }
+	  div.appendChild(spin_);
+	  spin_.style.visibility="hidden";
+	  
+
+	  
+	  g_charDivArray[g_charDivArray.length] = id_;
 	  //<div class="GraphViewCSS" id="GraphView"  ></div>
 //   <div class="GraphViewCSS" id="GraphView_Time"  ></div>
 //   <div class="GraphViewCSS" id="GraphView_Period"  ></div>
@@ -193,6 +210,8 @@ var __adobewebfontsappname__="dreamweaver"
   var g_rawdata;
   var g_data;
   var g_colorPal = d3.scale.category10().domain(d3.range(0,10));
+  var g_charDivArray = [];
+  
 $.getJSON('/data', function(data) {     
 			g_rawdata=data;
 			initialize();
@@ -322,7 +341,7 @@ function initialize() {
  createLinechart(g_data,"Chart_Line_MPR_overMONTH",'new',o_chartoption);
  
  var o_chartoption = createChartOption(w_view ,400,"Number of Medication Days","Medication Posession Rate (MPR)","MPR_over_TotalPeriod");
- createChartDiv('Chart_Scatter_MPR_overMONTH'); 
+ createChartDiv('Chart_Scatter_MPR_overMONTH',o_chartoption); 
  createScatterchart(g_data,"Chart_Scatter_MPR_overMONTH", 'new',o_chartoption);
  
  
@@ -338,10 +357,19 @@ function initialize() {
 console.log("initialized\n");
 console.log(g_data);
 console.log(g_rawdata);
+
+
 //Quick_createGroupByDrug();
 // 
   }
-  
+function requestData(parameter) {
+	StartLoadingAnimation(g_charDivArray);
+	 $.getJSON('/data', parameter,
+            function(data) {
+            g_rawdata = data;
+			renewData();			
+        });
+}
 $(function(){
 
     var currentValue = $('#DF_gaps_currentValue');
@@ -349,13 +377,9 @@ $(function(){
     $('#DF_gaps').change(function(){
         currentValue.html(this.value);
 		//call data reset
-		 $.getJSON('/data', {           
+		requestData( {           
               gap: this.value
-            },
-            function(data) {
-            g_rawdata = data;
-			renewData();			
-        });
+            });
     });
     //$('#DF_gaps').change();
 
@@ -367,13 +391,9 @@ $(function(){
     $('#DF_overlaps').change(function(){
         currentValue.html(this.value);
 		//call data reset
-		 $.getJSON('/data', {           
+		requestData(  {           
               overlap: this.value
-            },
-            function(data) {
-            g_rawdata = data;
-			renewData();			
-        });
+            });
     });
     //$('#DF_gaps').change();
 

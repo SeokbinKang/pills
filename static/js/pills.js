@@ -2,7 +2,22 @@
   var group_numberofGroups=0;
   var GroupList=[];
   
-  
+function StartLoadingAnimation(chartIDList) 
+{
+	for(i=0;i<chartIDList.length;i++)
+	{
+		var svgID = chartIDList[i] + "_svg";
+		var svg_ = document.getElementById(svgID);
+		svg_.style.opacity = 0.3;
+		
+		var div_ = document.getElementById(chartIDList[i]);
+		
+		var loadingID = chartIDList[i] + "_loading";
+		var loadingElement = document.getElementById(loadingID);
+		loadingElement.style.visibility="visible";
+		
+	}	
+}
 function renewData() {
 	console.log('attemping renew data\n');
 

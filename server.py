@@ -38,7 +38,7 @@ class Data(Resource):
     if (args['overlap'] is not None):
       overlap = args['overlap']
 
-    fileName = 'data/Ace_Beta_Diur_10SamplingRate.txt'
+    fileName = 'data/Ace_Beta_Diur_1SamplingRate.txt'
     if (args['fileName'] is not None):
       fileName = args['fileName']
 

@@ -67,6 +67,8 @@ class Drug:
         self.maxCMG=[]
         self.minCMG=[]
         self.MPR=[]
+        self.numGaps=[]
+        self.numOverlaps=[]
 
 def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overlap=0):
     #read data
@@ -280,6 +282,8 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
                 drugStats[drugID].maxCMG.append(patient.maxCMG[drugID])
                 drugStats[drugID].minCMG.append(patient.minCMG[drugID])
                 drugStats[drugID].MPR.append(patient.MPR[drugID])
+                drugStats[drugID].numGaps.append(patient.numGap[drugID])
+                drugStats[drugID].numOverlaps.append(patient.numOverlap[drugID])
     #sort stats
     for drugID in drugList:
         drugStats[drugID].totalPeriod.sort()
@@ -294,6 +298,8 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
         drugStats[drugID].maxCMG.sort()
         drugStats[drugID].minCMG.sort()
         drugStats[drugID].MPR.sort()
+        drugStats[drugID].numGaps.sort()
+        drugStats[drugID].numOverlaps.sort()
 
     return patients, drugStats
 

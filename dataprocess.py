@@ -324,6 +324,9 @@ def patientsJSON(patients):
             drug["avg_overlap_length"] = patient.avgOverlapLen[drugID]
             drug["day_30"] = patient.day30[drugID]
             drug["day_90"] = patient.day90[drugID]
+
+            drug["mpr_30_ci_lower"] = patient.MPRCI[drugID][0] if len(patient.MPRCI[drugID]) > 0 else 0
+            drug["mpr_30_ci_upper"] = patient.MPRCI[drugID][1] if len(patient.MPRCI[drugID]) > 0 else 0
  
 
             drugsList.append(drug)

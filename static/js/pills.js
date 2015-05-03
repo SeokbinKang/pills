@@ -460,7 +460,11 @@ var groupRoot = svg.append("g")
       .data(data_)
     .enter().append("rect")
       .attr("class", "bardefault")
-      .attr("x", function(d) { return (x(d[xAttr])).toFixed(0); })
+      .attr("x", function(d) { 
+			var t= (x(d[xAttr])).toFixed(0);		
+			t=t-x.rangeBand()/2;						
+		  return t; }
+	  )
       .attr("id", function(d) { return "bar"+d[xAttr]; })
       .attr("width", x.rangeBand())
       .attr("y", function(d) { return (y(d[yAttr])).toFixed(0); })

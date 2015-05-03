@@ -202,11 +202,11 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
                     patient.MPR[drugID]=supplyLen*1.0/patient.totalPeriod[drugID]
                 #compute 30-day MPRs
                 startDate=drugRecords[0][0]
-                endDate=drugRecords[len(drugRecords)-1][1]
+                endDate=drugRecords[len(drugRecords)-1][0]
                 newRecords=[]
-                for i in range(len(drugRecords)):#merge overlaps
+                for i in range(0, len(drugRecords)):#merge overlaps
                     if len(newRecords)>0:
-                        if (newRecords[len(newRecords)-1][1]-drugRecords[i][0]).days>=-1:
+                        if (newRecords[len(newRecords)-1][1]-drugRecords[i][0]).days>=-1 and i<len(drugRecords)-1:
                             newRecords[len(newRecords)-1][1]=drugRecords[i][1]
                         else:
                             newRecords.append(drugRecords[i])
@@ -215,8 +215,6 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
                 index=0
                 while startDate<endDate:
                     nextEndDate=min(startDate+datetime.timedelta(days=30), endDate)
-                    if (nextEndDate-startDate).days<30:
-                        break
                     interval=(nextEndDate-startDate).days
                     supplyLen=0
                     while startDate<nextEndDate:

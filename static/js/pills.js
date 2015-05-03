@@ -2,6 +2,34 @@
   var group_numberofGroups=0;
   var GroupList=[];
   
+  function createChartDiv(id_,option_) {
+	  	 ("div1");
+	  var root =  document.getElementById('middleview');
+	  var div = document.createElement('div');
+	  div.id = id_;
+	  div.className="GraphViewCSS";
+	  root.appendChild(div);
+	  
+	  //create loading element
+	  var spin_ =  document.createElement('div');
+	  spin_.id = id_+"_loading";
+	  spin_.className = "spinner";
+	  for(var i=1;i<=5;i++){
+	  	  var cube1 =  document.createElement('div');
+		  cube1.className = "rect"+i;
+		  spin_.appendChild(cube1);
+		  
+	  }
+	  div.appendChild(spin_);
+	  spin_.style.visibility="hidden";
+	  
+
+	  
+	  g_charDivArray[g_charDivArray.length] = id_;
+	  //<div class="GraphViewCSS" id="GraphView"  ></div>
+//   <div class="GraphViewCSS" id="GraphView_Time"  ></div>
+//   <div class="GraphViewCSS" id="GraphView_Period"  ></div>
+  }
 function StartLoadingAnimation(chartIDList) 
 {
 	for(i=0;i<chartIDList.length;i++)
@@ -240,7 +268,15 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 		xLabel = cOption.xLabel;
 		yLabel = cOption.yLabel;
 		
-	} else 	return ;
+	}  else if(cOption.type == 'MED_PERIOD_DIST'){
+		
+		data_=data_o.stats.periodRange;
+		xAttr= 'range';
+		yAttr= 'count';
+		xLabel = cOption.xLabel;
+		yLabel = cOption.yLabel;
+		
+	}else 	return ;
 
 
 
@@ -365,6 +401,7 @@ var yAxis = d3.svg.axis()
   if(d[yAttr]>maxFrequency) maxFrequency=d[yAttr];
   return d[xAttr]; }));
   y.domain([0,maxFrequency+10]);
+  
 var svg = d3.select("#"+parentNodeID).append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -374,13 +411,16 @@ var svg = d3.select("#"+parentNodeID).append("svg")
 	.attr("measure",xLabel)
 	.attr("maxFrequency",maxFrequency)
 	.attr("barWidth",x.rangeBand());
-
-var brush = d3.svg.brush()
-      .x(x)
-      .y(y)
-      .on("brushstart", brushstart)
-      .on("brush", brushmove)
-      .on("brushend", brushend);
+if(cOption.type == 'MPR_DIST') {
+	var brush = d3.svg.brush()
+	      .x(x)
+	      .y(y)
+	      .on("brushstart", brushstart)
+	      .on("brush", brushmove)
+	      .on("brushend", brushend);
+		  
+	svg.call(brush);	
+}
 	  
 //var data=[{"letter":"A","frequency" : 0.1},{"letter":"B","frequency" : 0.2},{"letter":"C","frequency" : 0.3}];
 
@@ -426,7 +466,7 @@ var groupRoot = svg.append("g")
       .attr("y", function(d) { return (y(d[yAttr])).toFixed(0); })
       .attr("height", function(d) { return height - (y(d[yAttr])).toFixed(0);; })	;
 	  
-	svg.call(brush);	   
+   
 // Clear the previously-active brush, if any.
  function brushstart(p) {
    // if (brushCell !== this) {

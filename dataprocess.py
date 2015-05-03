@@ -235,8 +235,10 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
                 if len(patient.MPR30Day[drugID])>0:
                     stdErr/=len(patient.MPR30Day[drugID])
                 stdErr=stdErr**0.5
-                patient.MPRCI[drugID].append(avgMPR30-1.96*stdErr)
-                patient.MPRCI[drugID].append(avgMPR30+1.96*stdErr)
+                lowerBound=max(avgMPR30-1.96*stdErr, 0.0)
+                upperBound=min(avgMPR30+1.96*stdErr, 1.0)
+                patient.MPRCI[drugID].append(lowerBound)
+                patient.MPRCI[drugID].append(upperBound)
                 #compute average gap and overlap lengths
                 gapLen=[]
                 overlapLen=[]

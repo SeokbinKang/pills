@@ -8,11 +8,13 @@ function  UI_ResetGroup() {
 	
 	//remove group from each chart
 	$( ".GroupItemCSS" ).remove();	
+	g_groupArray=[];
 	group_numberofGroups=0;	
+
 	renewData();	 
- }
+}
   
-  function createChartDiv(id_,option_) {
+function createChartDiv(id_,option_) {
 	  	 ("div1");
 	  var root =  document.getElementById('middleview');
 	  var div = document.createElement('div');
@@ -35,7 +37,7 @@ function  UI_ResetGroup() {
 	  
       //create measure-description page
 	  if(id_ =='Chart_Line_MPR_overMONTH') {
-		  console.log(id_);
+
 	   var spin_ =  document.createElement('div');
 	  spin_.id = id_+"_desc";
 	  spin_.className = "measure_desc";
@@ -86,7 +88,7 @@ function Interact_createMPRRangeGroup(mprmin,mprmax){
 
 
 //		AddGrouptoUI(groupname,color,filter)
-	AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
+	AddGrouptoUI(new_group,new_group.color,null,new_group.size);
 
 	//update group to each visualization
 
@@ -107,7 +109,7 @@ function Quick_createGroupByAge() {
 
 
 //		AddGrouptoUI(groupname,color,filter)
-		AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
+		AddGrouptoUI(new_group,new_group.color,null,new_group.size);
 
 	//update group to each visualization
 
@@ -127,7 +129,7 @@ function Quick_createGroupByGender() {
 		
 
 //		AddGrouptoUI(groupname,color,filter)
-		AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
+		AddGrouptoUI(new_group,new_group.color,null,new_group.size);
 
 	//update group to each visualization
 
@@ -153,7 +155,7 @@ function Quick_createGroupByDrug() {
 		
 
 //		AddGrouptoUI(groupname,color,filter)
-		AddGrouptoUI(new_group.name,new_group.color,null,new_group.size);
+		AddGrouptoUI(new_group,new_group.color,null,new_group.size);
 
 
 	//update group to each visualization
@@ -161,38 +163,64 @@ function Quick_createGroupByDrug() {
 		updateAllChart(new_group);		 
 		
 	}
+//	var q = document.querySelectorAll('[groupID="group1"]');
+
+	
 
 }
+function toggleGroup(groupID) {
+		
+	var set_value=0.3;
+	for(var i=0;i<g_groupArray.length;i++)
+	{
+		
+		if(g_groupArray[i].id == groupID) {
+
+			for(var j=0;j<g_groupArray[i].groupChart.length;j++) {
+				console.log(g_groupArray[i].groupChart[j][0][0]);
+				if(g_groupArray[i].groupChart[j][0][0].style.opacity !=0.3) set_value = 0.3;	
+					else set_value = 1;	
+				g_groupArray[i].groupChart[j][0][0].style.opacity= set_value;
+				
+			}
+			
+			return ;
+		}
+	}
+}
+
 function updateAllChart(new_group){
 	
+	
 	var o_chartoption = createChartOption(w_view,400,"MPR","# of Patients",'MPR_DIST');
-	createbarChart(new_group,"Chart_Bar_MPR_DISTRIBUTION", 'appendGroup',o_chartoption); 
+	new_group.groupChart[new_group.groupChart.length] = createbarChart(new_group,"Chart_Bar_MPR_DISTRIBUTION", 'appendGroup',o_chartoption); 
 	
 	o_chartoption = createChartOption(w_view ,400,"Total Medication Period (days)","Number of Patients",'MED_PERIOD_DIST');
-	 createbarChart(new_group,"Chart_Bar_MEDPERIOD_DISTRIBUTION", 'appendGroup',o_chartoption); 
+	new_group.groupChart[new_group.groupChart.length] = createbarChart(new_group,"Chart_Bar_MEDPERIOD_DISTRIBUTION", 'appendGroup',o_chartoption); 
 		 
 	o_chartoption = createChartOption(w_view,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');		
-	createLinechart(new_group,"Chart_Line_MPR_overMONTH",'appendGroup',o_chartoption);
+	new_group.groupChart[new_group.groupChart.length] =createLinechart(new_group,"Chart_Line_MPR_overMONTH",'appendGroup',o_chartoption);
 		 
 	o_chartoption = createChartOption(w_view,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
-	createScatterchart(new_group,"Chart_Scatter_MPR_overMONTH", 'appendGroup',o_chartoption);
+	new_group.groupChart[new_group.groupChart.length] =createScatterchart(new_group,"Chart_Scatter_MPR_overMONTH", 'appendGroup',o_chartoption);
 	
 	 o_chartoption = createChartOption(w_view ,400,"The total number of gaps during medication","Number of Patients",'GAP_DIST');
 		
-	 createbarChart(new_group,"Chart_Bar_GAP_DISTRIBUTION", 'appendGroup',o_chartoption); 
+	new_group.groupChart[new_group.groupChart.length] = createbarChart(new_group,"Chart_Bar_GAP_DISTRIBUTION", 'appendGroup',o_chartoption); 
  
 	 o_chartoption = createChartOption(w_view ,400,"The total number of overlaps during medication","Number of Patients",'OVERLAP_DIST');
 	
-	 createbarChart(new_group,"Chart_Bar_OVERLAP_DISTRIBUTION", 'appendGroup',o_chartoption); 
+	new_group.groupChart[new_group.groupChart.length] = createbarChart(new_group,"Chart_Bar_OVERLAP_DISTRIBUTION", 'appendGroup',o_chartoption); 
  
-	
+	g_groupArray[g_groupArray.length] = new_group;
 	
 }
- function AddGrouptoUI(groupname,color,filter,size) {
+ function AddGrouptoUI(group,color,filter,size) {
 	 var grouproot = document.getElementById('groups');
 	 var div_ = document.createElement("div");
 	 var div_child = document.createElement("div");
 	 var div_child2 = document.createElement("div");
+	 var groupname = group.name;
 	 div_.className = 'GroupItemCSS';
 	 div_child.className = 'GroupNameCSS';
 	 if(size!=null) {
@@ -200,10 +228,25 @@ function updateAllChart(new_group){
 	 }
 //	 div_child.innerHTML = "-";
 	div_child.style.height = "30px";
-	 div_.innerHTML = groupname;
+	 div_.innerHTML = groupname+"&#09;";
 	 div_child.style.background=color;
+	 var viewicon = document.createElement('span');
+	 viewicon.className = "glyphicon glyphicon-eye-open";
+	 viewicon.setAttribute("aria-hidden","true");
+
+	 viewicon.setAttribute("groupID",group.id);
+	 viewicon.addEventListener("click", function(){
+		 	if(this.className == "glyphicon glyphicon-eye-open") {
+				this.className = "glyphicon glyphicon-eye-close"
+			} else this.className = "glyphicon glyphicon-eye-open"
+			
+			toggleGroup(this.getAttribute("groupID"));
+
+	 });
+	 div_.appendChild(viewicon);
+
 	 div_.appendChild(div_child);
-	 	 div_.appendChild(div_child2);
+	 div_.appendChild(div_child2);
 	// div_child2.innerHTML = filter.MPRFilter.minValue + " <= "+filter.filterMeasure + " <= " +filter.MPRFilter.maxValue;
 	 grouproot.appendChild(div_);
  }
@@ -218,7 +261,7 @@ function Group_CreateGroup(patientIDs,filter) {
 	 
 	// createScatterchart(d_mprovertime,"GraphView_Period","filter",group_numberofGroups,o_chartoption, filter);
 	
-	 AddGrouptoUI('Group '+filter.ID,filter.color,filter);	
+	// AddGrouptoUI('Group '+filter.ID,filter.color,filter);	
 	}
 	// createLinechart(d_mprovertime,"GraphView_Period",'appendData',group_numberofGroups,o_chartoption);
 	
@@ -396,12 +439,8 @@ var yAxis = d3.svg.axis()
 						//retrieve the last bars' heights
 			var LastGroupID = "group"+(data_o.id-1);
 			var lastgroup_DOM =svgg.querySelector('#'+(parentNodeID+"_svg_"+LastGroupID));
-			console.log(svgg);
-			console.log('[groupID="'+LastGroupID+'"]');
-			console.log(lastgroup_DOM);
+
 			var lastArrayRect = lastgroup_DOM.getElementsByTagName('rect');
-			console.log(lastArrayRect);
-			console.log(lastArrayRect.length);
 			
 
 			x.domain(data_.map(function(d) {  return d[xAttr]; }));
@@ -421,7 +460,7 @@ var yAxis = d3.svg.axis()
 				}
 			}
 
-						console.log(lastY);				  
+						
 		  	svg = d3.select("#"+parentNodeID+"_svg"+" g");
 
 				svg = svg.append("g")
@@ -447,7 +486,7 @@ var yAxis = d3.svg.axis()
 				  return (y(d[yAttr])).toFixed(0) - lastY[i];; 
 				  })
     		  .attr("height", function(d) {	  return height - (y(d[yAttr])).toFixed(0);; })	; 
-			
+			return svg;
 	}
 		
 	} else {
@@ -595,13 +634,16 @@ var groupRoot = svg.append("g")
 	}*/
 	
 	svg.selectAll("rect").classed("barselected",false);
+	
   }
 
 function type(d) {
   d.frequency = +d.frequency;
   return d;
 }
+	return groupRoot;
 	}
+	
 }
 
 
@@ -862,7 +904,7 @@ function createScatterchart(data_o,parentNodeID,flag,chartOption){
 		      .attr("cy",function(d, i) { return y_trans(d[yAttr]); })
 //			  .attr("id",function(d,i) { return "dot"+i;})
 		      .style("fill", data_o.color); 
-		
+		return svg;
 	} else 	if(flag=='filter') {
 		
 		var svg = d3.select("#"+parentNodeID+"_svg"+" g");

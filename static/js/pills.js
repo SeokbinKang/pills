@@ -178,7 +178,7 @@ function toggleGroup(groupID) {
 
 			for(var j=0;j<g_groupArray[i].groupChart.length;j++) {
 				console.log(g_groupArray[i].groupChart[j][0][0]);
-				if(g_groupArray[i].groupChart[j][0][0].style.opacity !=0.3) set_value = 0.3;	
+				if(g_groupArray[i].groupChart[j][0][0].style.opacity !=0.1) set_value = 0.1;	
 					else set_value = 1;	
 				g_groupArray[i].groupChart[j][0][0].style.opacity= set_value;
 				
@@ -813,6 +813,7 @@ var y_trans_under = d3.scale.linear()
     var x0 = x_trans.invert(mouseX);
     x0 = Math.round(x0);
 
+
     y_val = y_trans(hData[x0]['avg']);
 
 
@@ -825,7 +826,7 @@ var y_trans_under = d3.scale.linear()
             .style('visibility', 'visible')
             .style("left", (d3.event.pageX + 60 + "px"))
             .style("top", (d3.event.pageY + "px"))
-        .html("Number of patients: " + hData[x0].count + "<br/> CI = [ " + hData[x0].ci_lower.toFixed(3) + ", " + hData[x0].ci_upper.toFixed(3) + " ]" + "<br/> CI len: " + (hData[x0].ci_upper.toFixed(3) - hData[x0].ci_lower.toFixed(3)).toFixed(3));
+        .text("Number of patients: " + hData[x0].count);
   }
 
 

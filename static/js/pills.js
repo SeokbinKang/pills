@@ -783,7 +783,7 @@ var y_trans_under = d3.scale.linear()
             .style('visibility', 'visible')
             .style("left", (d3.event.pageX + 60 + "px"))
             .style("top", (d3.event.pageY + "px"))
-        .html("Number of patients: " + hData[x0].count + "<br/> CI = (" + hData[x0].ci_lower.toFixed(3) + ", " + hData[x0].ci_upper.toFixed(3) + ")");
+        .html("Number of patients: " + hData[x0].count + "<br/> CI = (" + hData[x0].ci_lower.toFixed(3) + ", " + hData[x0].ci_upper.toFixed(3) + ")" + "<br/> CI len: " + (hData[x0].ci_upper.toFixed(3) - hData[x0].ci_lower.toFixed(3)).toFixed(3));
   }
 
 

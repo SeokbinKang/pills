@@ -213,6 +213,31 @@ function createPatientGroup(name_,color_)
 	var g = {name : name_, id :group_numberofGroups ,  size : 0,  color : color_, stats : {mprRange : [] , csaRange : [] , cmgRange : [], mpr30 : [],periodRange : [],gapRange : [] , overlapRange : []}, patientData : [] };
 	return g;
 }
+
+function standardDeviation(values){
+  var avg = average(values);
+  
+  var squareDiffs = values.map(function(value){
+    var diff = value - avg;
+    var sqrDiff = diff * diff;
+    return sqrDiff;
+  });
+  
+  var avgSquareDiff = average(squareDiffs);
+ 
+  var stdDev = Math.sqrt(avgSquareDiff);
+  return stdDev;
+}
+ 
+function average(data){
+  var sum = data.reduce(function(sum, value){
+    return sum + value;
+  }, 0);
+ 
+  var avg = sum / data.length;
+  return avg;
+}
+
 function constructInitData(data,conditionName,conditionValue) {
 
 
@@ -306,18 +331,30 @@ function constructInitData(data,conditionName,conditionValue) {
 		for(mpr30index =0; mpr30index < p.drug_details[drugIndex].mpr_30.length-1 && mpr30index<30;mpr30index++)
 		{
 			if(data.stats.mpr30[mpr30index] == undefined) {
-				data.stats.mpr30[mpr30index] = {count : 0 , value : 0 , avg:0 };
+				data.stats.mpr30[mpr30index] = {count : 0 , value : 0 , avg:0, ci_lower: 0, ci_upper: 1, vals: new Array() };
 			} 
 			data.stats.mpr30[mpr30index].count++;
 			data.stats.mpr30[mpr30index].value +=  p.drug_details[drugIndex].mpr_30[mpr30index];
+                        data.stats.mpr30[mpr30index].vals.push(p.drug_details[drugIndex].mpr_30[mpr30index]);
 			
 		}		
   
   }	
+
 	for(j =0; j<data.stats.mpr30.length;j++)
 	{
 		data.stats.mpr30[j].avg = data.stats.mpr30[j].value / data.stats.mpr30[j].count;
+
+                sdev = standardDeviation(data.stats.mpr30[j].vals);
+                serror = sdev/Math.sqrt(data.stats.mpr30[j].count);
+
+                serror = 1.96 * serror;
+
+                data.stats.mpr30[j].ci_lower = Math.max(data.stats.mpr30[j].avg - serror, 0);
+                data.stats.mpr30[j].ci_upper = Math.min(data.stats.mpr30[j].avg + serror, 1);
+                
 	}
+        
 	data.size = 100*data.patientData.length/ g_rawdata.patients.length;
   return data;
 }

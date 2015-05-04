@@ -750,7 +750,6 @@ var y_trans_under = d3.scale.linear()
     var x0 = x_trans.invert(mouseX);
     x0 = Math.round(x0);
 
-
     y_val = y_trans(hData[x0]['avg']);
 
 
@@ -763,7 +762,7 @@ var y_trans_under = d3.scale.linear()
             .style('visibility', 'visible')
             .style("left", (d3.event.pageX + 60 + "px"))
             .style("top", (d3.event.pageY + "px"))
-        .text("Number of patients: " + hData[x0].count);
+        .html("Number of patients: " + hData[x0].count + "<br/> CI = (" + hData[x0].ci_lower.toFixed(3) + ", " + hData[x0].ci_upper.toFixed(3) + ")");
   }
 
 

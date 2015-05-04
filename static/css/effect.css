@@ -1,5 +1,17 @@
 .spinner {
 	margin: 100px auto;
+	width: 400px;
+	height: 200px;
+	text-align: center;
+	font-size: 10px;
+	position: absolute;
+	top: 10%;
+	left: 40%;
+}
+
+
+.spinner {
+	margin: 100px auto;
 	width: 160px;
 	height: 80px;
 	text-align: center;
@@ -52,4 +64,17 @@
     transform: scaleY(1.0);
     -webkit-transform: scaleY(1.0);
   }
+}
+
+
+.measure_desc {
+	margin: 10px auto;
+
+	width: 800px;
+	height: 340px;
+	text-align: center;
+	font-size: 10px;
+	position: absolute;
+	top: 10%;
+	left: 10%;
 }

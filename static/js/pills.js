@@ -2,6 +2,16 @@
   var group_numberofGroups=0;
   var GroupList=[];
   
+function  UI_ResetGroup() {
+	
+	//delete grouplist
+	
+	//remove group from each chart
+	$( ".GroupItemCSS" ).remove();	
+	group_numberofGroups=0;	
+	renewData();	 
+ }
+  
   function createChartDiv(id_,option_) {
 	  	 ("div1");
 	  var root =  document.getElementById('middleview');
@@ -23,7 +33,18 @@
 	  div.appendChild(spin_);
 	  spin_.style.visibility="hidden";
 	  
+      //create measure-description page
+	  if(id_ =='Chart_Line_MPR_overMONTH') {
+		  console.log(id_);
+	   var spin_ =  document.createElement('div');
+	  spin_.id = id_+"_desc";
+	  spin_.className = "measure_desc";
 
+	  spin_.style.backgroundImage = "url('./css/mpr30_desc.bmp')"
+	  spin_.style.zIndex = 10;
+	  div.appendChild(spin_);
+  	  spin_.style.visibility="visible";
+	  }
 	  
 	  g_charDivArray[g_charDivArray.length] = id_;
 	  //<div class="GraphViewCSS" id="GraphView"  ></div>
@@ -49,7 +70,7 @@ function StartLoadingAnimation(chartIDList)
 function renewData() {
 	console.log('attemping renew data\n');
 
-    console.log(	$( ".GraphViewCSS" ));
+
     $( ".GraphViewCSS" ).remove();		
 		
 	initialize()

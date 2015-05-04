@@ -45,7 +45,7 @@ function createChartDiv(id_,option_) {
 	  spin_.style.backgroundImage = "url('./css/mpr30_desc.bmp')"
 	  spin_.style.zIndex = 10;
 	  div.appendChild(spin_);
-  	  spin_.style.visibility="visible";
+  	  spin_.style.visibility="hidden";
 	  }
 	  
 	  g_charDivArray[g_charDivArray.length] = id_;

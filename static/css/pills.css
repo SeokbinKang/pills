@@ -83,3 +83,17 @@ input[type="checkbox"] {
   pointer-events: none;
   z-index: 1060;
 }
+
+.charttitleCSS {
+	color: #333333;
+	background-color: #DDDDDD;
+	font-family: carter-one;
+	font-style: normal;
+	font-weight: 400;
+	font-size: 20px;
+	text-align: center;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.charttitleCSS:hover{ cursor:pointer}

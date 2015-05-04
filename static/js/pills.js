@@ -320,7 +320,7 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 	var margin = {top: 40, right: 70, bottom: 80, left: 70},
 	 width = cOption.width - margin.left - margin.right,
     height = cOption.height - margin.top - margin.bottom;
-
+	var caption = "";
 
 	if(cOption.type == 'MPR_DIST') {
 		
@@ -329,6 +329,7 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 		yAttr= 'count';
 		xLabel = cOption.xLabel;
 		yLabel = cOption.yLabel;
+		caption = "Distribution of MPR Values (MPR value calculated for each patient)";
 			
 	} else if(cOption.type == 'CSA_DIST'){
 		
@@ -353,6 +354,7 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 		yAttr= 'count';
 		xLabel = cOption.xLabel;
 		yLabel = cOption.yLabel;
+		caption = "Distribution of Total Medication Lifetime (Total Medication Lifetime is of each patient)";
 		
 	} else if(cOption.type == 'GAP_DIST'){
 		
@@ -361,6 +363,7 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 		yAttr= 'count';
 		xLabel = cOption.xLabel;
 		yLabel = cOption.yLabel;
+		caption = "Distribution of Overlaps (The total number of overlaps is of each patient)";
 		
 	} else if(cOption.type == 'OVERLAP_DIST'){
 		
@@ -369,6 +372,7 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 		yAttr= 'count';
 		xLabel = cOption.xLabel;
 		yLabel = cOption.yLabel;
+		caption = "Distribution of Gaps (The total number of gaps is of each patient)";
 		
 	} else 	return ;
 
@@ -497,6 +501,11 @@ var yAxis = d3.svg.axis()
   return d[xAttr]; }));
   y.domain([0,maxFrequency+10]);
   
+  var parent_ = document.getElementById(parentNodeID);
+  var caption_e = document.createElement("div");
+  caption_e.innerHTML = caption;
+  caption_e.className="charttitleCSS";
+  parent_.appendChild(caption_e);
 var svg = d3.select("#"+parentNodeID).append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -714,6 +723,18 @@ function createLinechart(data_o,parentNodeID,flag,chartOption){
 		
 		
 	} else {
+	 
+  var parent_ = document.getElementById(parentNodeID);
+  var caption_e = document.createElement("div");
+  var caption = "Temporal Change of instantaneous MPR30 (MPR30 is calculated at each 30-day interval)"
+  caption_e.innerHTML = caption;
+  caption_e.className="charttitleCSS";
+  caption_e.addEventListener("click", function(){
+	  		if(document.getElementById("Chart_Line_MPR_overMONTH_desc").style.visibility != "visible") 	document.getElementById("Chart_Line_MPR_overMONTH_desc").style.visibility="visible";
+				else document.getElementById("Chart_Line_MPR_overMONTH_desc").style.visibility="hidden";
+
+	 });
+  parent_.appendChild(caption_e);
 	
 	var svg = d3.select("#"+parentNodeID).append("svg")
 	    .attr("width", width+ margin.left + margin.right )
@@ -822,7 +843,7 @@ var y_trans_under = d3.scale.linear()
     toolTip.style('display', null);
         
         //** Display tool tip
-        toolTip
+     toolTip
             .style('visibility', 'visible')
             .style("left", (d3.event.pageX + 60 + "px"))
             .style("top", (d3.event.pageY + "px"))
@@ -929,7 +950,14 @@ function createScatterchart(data_o,parentNodeID,flag,chartOption){
 		
 		
 	} else {
-	
+
+	 var caption = "Distribution of MPR and Total Medication Lifetime"
+ var parent_ = document.getElementById(parentNodeID);
+  var caption_e = document.createElement("div");
+  caption_e.innerHTML = caption;
+  caption_e.className="charttitleCSS";
+
+  parent_.appendChild(caption_e);
 	var svg = d3.select("#"+parentNodeID).append("svg")
 	    .attr("width", width+ margin.left + margin.right )
 	    .attr("height", height + margin.top + margin.bottom)

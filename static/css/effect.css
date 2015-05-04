@@ -69,7 +69,8 @@
 
 .measure_desc {
 	margin: 10px auto;
-
+	background-repeat:no-repeat;
+	
 	width: 800px;
 	height: 340px;
 	text-align: center;

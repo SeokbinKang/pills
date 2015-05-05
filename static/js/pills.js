@@ -96,7 +96,7 @@ function Interact_createMPRRangeGroup(mprmin,mprmax){
 	return new_group;
 }
 function Quick_createGroupByAge() {
-	var ageRange = [ {min:0 , max:20}, {min:21,max:40}];
+	var ageRange = [ {min:0 , max:20}, {min:21,max:40},{min:41,max:60}];
 	
 	for(var i=0;i<ageRange.length;i++)
 	{
@@ -105,7 +105,7 @@ function Quick_createGroupByAge() {
 	//form patient group for each drug
 		new_group = createPatientGroup("AgeGroup ("+ range.min + " <= age <="+range.max+")",g_colorPal(group_numberofGroups));			
 		new_group = constructInitData(new_group,"age",range);
-		
+		new_group.name = "AgeGroup ("+ range.min + " <= age <="+range.max+" , # = "+new_group.patientCount+")";
 
 
 //		AddGrouptoUI(groupname,color,filter)
@@ -126,7 +126,7 @@ function Quick_createGroupByGender() {
 	//form patient group for each drug
 		new_group = createPatientGroup("GenderGroup (gender="+gen+")",g_colorPal(group_numberofGroups));			
 		new_group = constructInitData(new_group,"gender",idx);
-		
+		new_group.name = "GenderGroup (gender="+gen+" , # = "+new_group.patientCount+")";
 
 //		AddGrouptoUI(groupname,color,filter)
 		AddGrouptoUI(new_group,new_group.color,null,new_group.size);
@@ -152,6 +152,7 @@ function Quick_createGroupByDrug() {
 	//form patient group for each drug
 		new_group = createPatientGroup("DrugGroup (drugID="+drugname+")",g_colorPal(group_numberofGroups));			
 		new_group = constructInitData(new_group,"drug_id",drugname);
+		new_group.name = "DrugGroup (drugID="+drugname+" , # = "+new_group.patientCount+")";
 		
 
 //		AddGrouptoUI(groupname,color,filter)
@@ -363,7 +364,7 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 		yAttr= 'count';
 		xLabel = cOption.xLabel;
 		yLabel = cOption.yLabel;
-		caption = "Distribution of Overlaps (The total number of overlaps is of each patient)";
+		caption = "Distribution of Gaps (The total number of overlaps is of each patient)";
 		
 	} else if(cOption.type == 'OVERLAP_DIST'){
 		
@@ -372,7 +373,7 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 		yAttr= 'count';
 		xLabel = cOption.xLabel;
 		yLabel = cOption.yLabel;
-		caption = "Distribution of Gaps (The total number of gaps is of each patient)";
+		caption = "Distribution of Overlaps (The total number of gaps is of each patient)";
 		
 	} else 	return ;
 
@@ -403,9 +404,7 @@ var yAxis = d3.svg.axis()
 			svgg = svgg.getElementsByTagName('g');
 			svgg=svgg[0];
 	
-			maxFrequency = parseInt(svgg.getAttribute('maxFrequency'));
-			
-			
+			maxFrequency = parseInt(svgg.getAttribute('maxFrequency'));			
 			
 	
 			x.domain(data_.map(function(d) {  return d[xAttr]; }));
@@ -472,7 +471,13 @@ var yAxis = d3.svg.axis()
 					//.attr("groupID",data_.id);
 					.attr("id",parentNodeID+"_svg"+"_group"+data_o.id)
 					.attr("groupID","group"+data_o.id);
-		
+			var tip = d3.tip()
+		  .attr('class', 'd3-tip')
+		  .offset([-10, 0])
+		  .html(function(d) {
+		    return "<strong>value:</strong> <span style='color:"+data_o.color+"'>" + d[yAttr] + "</span>";
+		  })
+		  svg.call(tip);
 	 	    svg.selectAll(".bar")
 	 	       .data(data_)
 		    .enter().append("rect")
@@ -489,7 +494,10 @@ var yAxis = d3.svg.axis()
 		      .attr("y", function(d,i) { 	   
 				  return (y(d[yAttr])).toFixed(0) - lastY[i];; 
 				  })
-    		  .attr("height", function(d) {	  return height - (y(d[yAttr])).toFixed(0);; })	; 
+    		  .attr("height", function(d) {	  return height - (y(d[yAttr])).toFixed(0);; })
+			  .on('mouseover', tip.show)
+			   .on('mouseout', tip.hide)
+			  	; 
 			return svg;
 	}
 		
@@ -556,10 +564,19 @@ svg.append("g")
 	  .style("fill","goldenrod") 
       .text(yLabel);
 	  
+	  
 var groupRoot = svg.append("g")		
 				.attr("id",parentNodeID+"_svg"+"_group"+data_o.id)
 				.attr("groupID","group"+data_o.id);
-				
+	
+var tip = d3.tip()
+		  .attr('class', 'd3-tip')
+		  .offset([-10, 0])
+		  .html(function(d) {
+		    return "<strong>value:</strong> <span style='color:"+data_o.color+"'>" + d[yAttr] + "</span>";
+		  })
+  groupRoot.call(tip);		
+  	
   groupRoot.selectAll(".bar")
       .data(data_)
     .enter().append("rect")
@@ -572,7 +589,23 @@ var groupRoot = svg.append("g")
       .attr("id", function(d) { return "bar"+d[xAttr]; })
       .attr("width", x.rangeBand())
       .attr("y", function(d) { return (y(d[yAttr])).toFixed(0); })
-      .attr("height", function(d) { return height - (y(d[yAttr])).toFixed(0);; })	;
+      .attr("height", function(d) { return height - (y(d[yAttr])).toFixed(0);; })
+	   .on('mouseover', tip.show)
+			   .on('mouseout', tip.hide);
+	  
+groupRoot.selectAll(".text")
+		.data(data_)
+		.enter().append("text")
+	  	.attr("x", function(d) { 
+			var t= (x(d[xAttr])).toFixed(0);							
+			t=parseInt(t)+x.rangeBand();						
+		 return t; })
+	   .attr("y", function(d) { return (y(d[yAttr])).toFixed(0); })
+	   .style("fill","#a6bddb")
+	    .style("text-anchor", "middle")
+	   .text(function(d) { return d[yAttr]; })
+	   		 
+	  	;
 	  
    
 // Clear the previously-active brush, if any.
@@ -595,7 +628,7 @@ var groupRoot = svg.append("g")
    groupRoot.selectAll("rect").classed("barselected", function(d,i) {
    // svg.selectAll("rect").classed("barselected", function(d,i) {
 			var defcolor = false;
-			var rect_x=x(d.range);
+			var rect_x=x(d.range)+x.rangeBand()/2;		;
 			//console.log(i);
   		   if( e[0][0] < rect_x && e[1][0] > rect_x  ) {
 			  defcolor=true;	 

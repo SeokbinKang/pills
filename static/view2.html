@@ -5,6 +5,7 @@
     <script src="libs/jquery-2.1.1.js" type="text/javascript"></script>
     <script src="libs/jquery-ui.js" type="text/javascript"></script>
     <script src="libs/d3.v3.js" charset="utf-8" type="text/javascript"></script>
+       <script src="libs/d3.tip.v0.6.3.js" charset="utf-8" type="text/javascript"></script>
     <script src="libs/chance.js" charset="utf-8" type="text/javascript"></script>
     <script src="js/pills.js" type="text/javascript"></script>
     <script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
@@ -220,7 +221,9 @@ function createPatientGroup(name_,color_)
 	var g = {name : name_, id :group_numberofGroups ,  size : 0,  color : color_, 
 	groupChart : [],
 	stats : {mprRange : [] , csaRange : [] , cmgRange : [], mpr30 : [],periodRange : [],gapRange : [] , overlapRange : []}, 
-	patientData : [] };
+	patientData : [],
+	patientCount : 0
+	 };
 	return g;
 }
 
@@ -350,7 +353,7 @@ function constructInitData(data,conditionName,conditionValue) {
 		}		
   
   }	
-
+	data.patientCount = numPatient;
 	for(j =0; j<data.stats.mpr30.length;j++)
 	{
 		data.stats.mpr30[j].avg = data.stats.mpr30[j].value / data.stats.mpr30[j].count;
@@ -391,7 +394,7 @@ function initialize() {
  createbarChart(g_data,"Chart_Bar_MPR_DISTRIBUTION", 'new',o_chartoption); 
  
  
- o_chartoption = createChartOption(w_view ,400,"Total Medication Period (days)","Number of Patients",'MED_PERIOD_DIST');
+ o_chartoption = createChartOption(w_view ,400,"Total Medication Lifetime (days)","Number of Patients",'MED_PERIOD_DIST');
  createChartDiv('Chart_Bar_MEDPERIOD_DISTRIBUTION');
  createbarChart(g_data,"Chart_Bar_MEDPERIOD_DISTRIBUTION", 'new',o_chartoption); 
  
@@ -400,7 +403,7 @@ function initialize() {
  createChartDiv('Chart_Line_MPR_overMONTH');  
  createLinechart(g_data,"Chart_Line_MPR_overMONTH",'new',o_chartoption);
  
- var o_chartoption = createChartOption(w_view ,400,"Number of Medication Days","Medication Posession Rate (MPR)","MPR_over_TotalPeriod");
+ var o_chartoption = createChartOption(w_view ,400,"Total Medication Lifetime (days)","Medication Posession Rate (MPR)","MPR_over_TotalPeriod");
  createChartDiv('Chart_Scatter_MPR_overMONTH',o_chartoption); 
  createScatterchart(g_data,"Chart_Scatter_MPR_overMONTH", 'new',o_chartoption);
  

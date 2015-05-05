@@ -951,6 +951,15 @@ function createScatterchart(data_o,parentNodeID,flag,chartOption){
 		var svg = d3.select("#"+parentNodeID+"_svg"+" g");
 		svg = svg.append("g")		
 				.attr("groupID","group"+data_o.id);
+				
+		var tip = d3.tip()
+		  .attr('class', 'd3-tip')
+		  .offset([-10, 0])
+		  .html(function(d) {
+		    return "<strong>MPR/Liftime:</strong> <span style='color:"+data_o.color+"'>"+ d.avgMPR +" / " + d.totalPeriod +  "</span>";
+		  })
+		  svg.call(tip);
+		  
 		svg.selectAll(".dot")
    		   .data(data_)
 		   .enter().append("circle")
@@ -958,7 +967,9 @@ function createScatterchart(data_o,parentNodeID,flag,chartOption){
 		      .attr("cx",function(d, i) { return x_trans(d[xAttr]); })
 		      .attr("cy",function(d, i) { return y_trans(d[yAttr]); })
 //			  .attr("id",function(d,i) { return "dot"+i;})
-		      .style("fill", data_o.color); 
+		      .style("fill", data_o.color)
+		      .on('mouseover', tip.show)
+			  .on('mouseout', tip.hide); 
 		return svg;
 	} else 	if(flag=='filter') {
 		
@@ -1029,7 +1040,16 @@ function createScatterchart(data_o,parentNodeID,flag,chartOption){
 	  .style("fill","goldenrod") 
       .text(yLabel); 
 	
-
+var tip = d3.tip()
+		  .attr('class', 'd3-tip')
+		  .offset([-10, 0])
+		  .html(function(d) {
+			 
+			  
+		    return "<strong>MPR/Liftime:</strong> <span style='color:"+data_o.color+"'>" + d.avgMPR +" / " + d.totalPeriod + "</span>";
+		  })
+  svg.call(tip);
+		  
  svg.selectAll(".dot")
       .data(data_)
     .enter().append("circle")
@@ -1038,7 +1058,10 @@ function createScatterchart(data_o,parentNodeID,flag,chartOption){
       .attr("cx",function(d, i) { return x_trans(d[xAttr]); })
       .attr("cy",function(d, i) { return y_trans(d[yAttr]); })
 	  .attr("id",function(d,i) { return "dot"+i;})
-      .style("fill", color_); 
+      .style("fill", color_)
+	  .on('mouseover', tip.show)
+	  .on('mouseout', tip.hide)
+	  ; 
 	
 
 	}	

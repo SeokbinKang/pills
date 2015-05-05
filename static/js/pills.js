@@ -592,7 +592,7 @@ var tip = d3.tip()
       .attr("height", function(d) { return height - (y(d[yAttr])).toFixed(0);; })
 	   .on('mouseover', tip.show)
 			   .on('mouseout', tip.hide);
-	  
+	  /*
 groupRoot.selectAll(".text")
 		.data(data_)
 		.enter().append("text")
@@ -603,9 +603,7 @@ groupRoot.selectAll(".text")
 	   .attr("y", function(d) { return (y(d[yAttr])).toFixed(0); })
 	   .style("fill","#a6bddb")
 	    .style("text-anchor", "middle")
-	   .text(function(d) { return d[yAttr]; })
-	   		 
-	  	;
+	   .text(function(d) { return d[yAttr]; });*/
 	  
    
 // Clear the previously-active brush, if any.

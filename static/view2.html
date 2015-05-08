@@ -185,7 +185,7 @@ var __adobewebfontsappname__="dreamweaver"
   var w_view
   var g_rawdata;
   var g_data;
-  var g_colorPal = d3.scale.category10().domain(d3.range(0,10));
+ // var g_colorPal = d3.scale.category10().domain(d3.range(0,10));
   var g_charDivArray = [];
   var g_GloablFilter =	{ Gap : 0 , Overlap : 0 , Periodmin : 0 , Periodmax:900};
   var g_groupArray = [];
@@ -194,6 +194,11 @@ $.getJSON('/data', function(data) {
 			initialize();
   });
   
+function g_colorPal(index) {
+	var colorPan = ["#66c2a5" , "#fc8d62", "#8da0cb" , "#fb8072" , "#80b1d3" , "#fdb462"];
+	if(index>=6) index=6;
+	return colorPan[index-1];
+}
 function createPatientGroup(name_,color_)
 {
 	group_numberofGroups++;

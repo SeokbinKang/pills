@@ -348,7 +348,7 @@ def qsort(patientList, head, tail):
 def patientsJSON(patients):
     
     patientsList = []
-    for patientID, patient in patients.items():
+    for patient in patients:
 
         patientsDetails = {}
 
@@ -390,9 +390,11 @@ def patientsJSON(patients):
 
 
         patientsDetails["drug_details"] = drugsList
-        patientsDetails["patient_id"] = patientID
+        patientsDetails["patient_id"] = patient.id
         patientsDetails["gender"] = patient.gender
         patientsDetails["age"] = patient.age
+        patientsDetails["domDrug"] = patient.domDrug
+        patientsDetails["domMPR"] = patient.domMPR
         
 
         patientsList.append(patientsDetails)

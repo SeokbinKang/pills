@@ -16,6 +16,7 @@ def unix_time_millis(dt):
 
 class Patient:
     def __init__(self):
+        self.id=''
         self.age=0
         self.gender=0#0 for male, 1 for female
         #prescriptions
@@ -52,6 +53,9 @@ class Patient:
         #30-day and 90-day prescriptions
         self.day30={}
         self.day90={}
+        #dominant drug
+        self.domDrug=''
+        self.domMPR=0.0
 
 class Drug:
     def __init__(self):
@@ -80,6 +84,7 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
         seg=line.split('\t')
         if seg[0] not in patients:#add new patient
             patients[seg[0]]=Patient()
+            patients[seg[0]].id=seg[0]
             #random age and gender
             patients[seg[0]].age=random.randint(0, 100)
             patients[seg[0]].gender=random.randint(0, 1)
@@ -301,7 +306,43 @@ def process(fileName, drugList=[], gender=[], ageMin=0, ageMax=100, gap=0, overl
         drugStats[drugID].numGaps.sort()
         drugStats[drugID].numOverlaps.sort()
 
-    return patients, drugStats
+    patientList=[]
+    for patientID, patient in patients.iteritems():
+        patientList.append(patient)
+    for patient in patientList:
+        maxLen=0
+        for drugID in drugList:
+            if patient.totalPeriod[drugID]>maxLen:
+                maxLen=patient.totalPeriod[drugID]
+                patient.domDrug=drugID
+        patient.domMPR=patient.MPR[patient.domDrug]
+    qsort(patientList, 0, len(patientList)-1)
+
+    #printPatientList(patientList)
+
+    return patientList, drugStats
+
+def qsort(patientList, head, tail):
+    i=head
+    j=tail
+    mid=patientList[(i+j)/2].domMPR
+    while True:
+        while patientList[i].domMPR<mid:
+            i+=1
+        while patientList[j].domMPR>mid:
+            j-=1
+        if i<=j:
+            t=patientList[i]
+            patientList[i]=patientList[j]
+            patientList[j]=t
+            i+=1
+            j-=1
+        if i>j:
+            break
+    if head<j:
+        qsort(patientList, head, j)
+    if i<tail:
+        qsort(patientList, i, tail)
 
 
 def patientsJSON(patients):
@@ -392,6 +433,7 @@ def drugsJSON(drugStats, drugList):
 def printPatients(patients):
     for patientID, patient in patients.items():
         print patientID
+        print patient.id
         print 'Age: '+str(patient.age)
         print 'Gender: '+str(patient.gender)
         for drugID, drugRecords in patient.prscrp.items():
@@ -420,6 +462,12 @@ def printPatients(patients):
             print '\t\t#Overlaps: '+str(patient.numOverlap[drugID])
             print '\t\tAverage Gap Length: '+str(patient.avgGapLen[drugID])
             print '\t\tAverage Overlap Length: '+str(patient.avgOverlapLen[drugID])
+
+def printPatientList(patientList):
+    for patient in patientList:
+        print patient.id
+        print '\t'+str(patient.domDrug)
+        print '\t'+str(patient.domMPR)
 
 def writePatients(patients):
     f=file('data/test.txt', 'w')

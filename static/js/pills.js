@@ -80,6 +80,21 @@ function renewData() {
 	
 	
 }
+function Interact_createPeriodRangeGroup(mprmin,mprmax){
+	var range = {min:mprmin , max:mprmax};
+	new_group = createPatientGroup("Medication Lifetime Group ("+ range.min + " < Lifetime <="+range.max+")",g_colorPal(group_numberofGroups));			
+	new_group = constructInitData(new_group,"lifetime",range);
+		
+
+
+//		AddGrouptoUI(groupname,color,filter)
+	AddGrouptoUI(new_group,new_group.color,null,new_group.size);
+
+	//update group to each visualization
+
+	updateAllChart(new_group);		 
+	return new_group;
+}
 function Interact_createMPRRangeGroup(mprmin,mprmax){
 	var range = {min:mprmin , max:mprmax};
 	new_group = createPatientGroup("MPRGroup ("+ range.min + " < MPR <="+range.max+")",g_colorPal(group_numberofGroups));			
@@ -192,15 +207,16 @@ function toggleGroup(groupID) {
 
 function updateAllChart(new_group){
 	
-	
 	var o_chartoption = createChartOption(w_view,400,"MPR","# of Patients",'MPR_DIST');
 	new_group.groupChart[new_group.groupChart.length] = createbarChart(new_group,"Chart_Bar_MPR_DISTRIBUTION", 'appendGroup',o_chartoption); 
 	
 	o_chartoption = createChartOption(w_view ,400,"Total Medication Period (days)","Number of Patients",'MED_PERIOD_DIST');
 	new_group.groupChart[new_group.groupChart.length] = createbarChart(new_group,"Chart_Bar_MEDPERIOD_DISTRIBUTION", 'appendGroup',o_chartoption); 
+	o_chartoption = createChartOption(w_view ,400,"Patient Subgroup (ranked by MPR)","Medication Posession Rate (MPR)",'MPR_SUBGROUP_DIST');
+	new_group.groupChart[new_group.groupChart.length]=createLinePointchart(new_group,"Chart_Line_MPR_SUBGROUP_DISTRIBUTION", 'appendGroup',o_chartoption); 
 		 
 	o_chartoption = createChartOption(w_view,400,"Time (Months from the start of medication) ","MPR",'MPR_over_MONTH');		
-	new_group.groupChart[new_group.groupChart.length] =createLinechart(new_group,"Chart_Line_MPR_overMONTH",'appendGroup',o_chartoption);
+	new_group.groupChart[new_group.groupChart.length] =createLinePointchart(new_group,"Chart_Line_MPR_overMONTH",'appendGroup',o_chartoption);
 		 
 	o_chartoption = createChartOption(w_view,400,"Total Medication Period(Days)","MPR","MPR_over_TotalPeriod");
 	new_group.groupChart[new_group.groupChart.length] =createScatterchart(new_group,"Chart_Scatter_MPR_overMONTH", 'appendGroup',o_chartoption);
@@ -502,38 +518,30 @@ var yAxis = d3.svg.axis()
 	}
 		
 	} else {
-		
+		// create new
 		maxFrequency=0;
 	  x.domain(data_.map(function(d) { 
-  if(d[yAttr]>maxFrequency) maxFrequency=d[yAttr];
-  return d[xAttr]; }));
-  y.domain([0,maxFrequency+10]);
+	  if(d[yAttr]>maxFrequency) maxFrequency=d[yAttr];
+			  return d[xAttr]; }));
+	  y.domain([0,maxFrequency+10]);
   
-  var parent_ = document.getElementById(parentNodeID);
-  var caption_e = document.createElement("div");
-  caption_e.innerHTML = caption;
-  caption_e.className="charttitleCSS";
-  parent_.appendChild(caption_e);
-var svg = d3.select("#"+parentNodeID).append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-	.attr("id", parentNodeID+"_svg")
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-	.attr("measure",xLabel)
-	.attr("maxFrequency",maxFrequency)
-	.attr("barWidth",x.rangeBand());
-if(cOption.type == 'MPR_DIST') {
-	var brush = d3.svg.brush()
-	      .x(x)
-	      .y(y)
-	      .on("brushstart", brushstart)
-	      .on("brush", brushmove)
-	      .on("brushend", brushend);
-		  
-	svg.call(brush);	
-}
-	  
+	  var parent_ = document.getElementById(parentNodeID);
+	  var caption_e = document.createElement("div");
+	  caption_e.innerHTML = caption;
+	  caption_e.className="charttitleCSS";
+	  parent_.appendChild(caption_e);
+	var svg = d3.select("#"+parentNodeID).append("svg")
+    	.attr("width", width + margin.left + margin.right)
+	    .attr("height", height + margin.top + margin.bottom)
+		.attr("id", parentNodeID+"_svg")
+	  .append("g")
+	    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+		.attr("measure",xLabel)
+		.attr("maxFrequency",maxFrequency)
+		.attr("barWidth",x.rangeBand());
+		
+		
+
 //var data=[{"letter":"A","frequency" : 0.1},{"letter":"B","frequency" : 0.2},{"letter":"C","frequency" : 0.3}];
 
 var maxFrequency=0;
@@ -592,61 +600,46 @@ var tip = d3.tip()
       .attr("height", function(d) { return height - (y(d[yAttr])).toFixed(0);; })
 	   .on('mouseover', tip.show)
 			   .on('mouseout', tip.hide);
-	  /*
-groupRoot.selectAll(".text")
-		.data(data_)
-		.enter().append("text")
-	  	.attr("x", function(d) { 
-			var t= (x(d[xAttr])).toFixed(0);							
-			t=parseInt(t)+x.rangeBand();						
-		 return t; })
-	   .attr("y", function(d) { return (y(d[yAttr])).toFixed(0); })
-	   .style("fill","#a6bddb")
-	    .style("text-anchor", "middle")
-	   .text(function(d) { return d[yAttr]; });*/
-	  
+	
    
 // Clear the previously-active brush, if any.
- function brushstart(p) {
-   // if (brushCell !== this) {
-   //   d3.select(brushCell).call(brush.clear());
-    //  x.domain(domainByTrait[p.x]);
-     // y.domain(domainByTrait[p.y]);
-   //   brushCell = this;
- //   }
+
+if(cOption.type == 'MPR_DIST') {
+	var brush = d3.svg.brush()
+	      .x(x)
+	      .y(y)
+	      .on("brushstart", brushstart)
+	      .on("brush", brushmove)
+	      .on("brushend", brushend);
+		  
+	svg.call(brush);	
+	var BarSelected=[];
+	  var MprData = data_; 
+  function brushstart(p) { 
  		BarSelected=[];
   }
-
-  // Highlight the selected circles.
-  var BarSelected=[];
-  var MprData = data_;
+  // Highlight the selected circles.  
+  
   function brushmove(p) {
     var e = brush.extent();
-   // console.log(e[0][0] + "  " + e[1][0]);
    groupRoot.selectAll("rect").classed("barselected", function(d,i) {
-   // svg.selectAll("rect").classed("barselected", function(d,i) {
+
 			var defcolor = false;
 			var rect_x=x(d.range)+x.rangeBand()/2;		;
-			//console.log(i);
+		
   		   if( e[0][0] < rect_x && e[1][0] > rect_x  ) {
-			  defcolor=true;	 
-		//	  console.log("selected"); 
-			BarSelected[i]=1;  
+			   			  defcolor=true;	 
+		
+				BarSelected[i]=1;  
 		  } else {
-			  BarSelected[i]=0;
+				  BarSelected[i]=0;
 		  }
           return defcolor;
 		  
     });
   }
-
   // If the brush is empty, select all circles.
   function brushend() {
-  //  if (brush.empty()) svg.selectAll(".hidden").classed("hidden", false);
-  		//this.clear();
-//		brush.clear();
-	//Group_CreateGroup(null);
-	
 
 	var min_,max_;
 	min_=1000;
@@ -654,29 +647,88 @@ groupRoot.selectAll(".text")
 	var mprwidth = MprData[1].range- MprData[0].range;
 	for(i=0;i<BarSelected.length;i++){  //why -10? idk.
 		if(BarSelected[i]>0) {
+			console.log(MprData[i].range);
 			if(MprData[i].range<min_) min_=MprData[i].range;
 			if(MprData[i].range>max_) max_=MprData[i].range;
 			
 		}
 		
 	}
+	max_=max_+ 0.05;
+	
+	if(max_>1) max_=1;
+	max_=max_.toFixed(2);
 	if(min_ == 1000) return ;	
-		
-//	var newFilter = createFilterOption(true,(min_-mprwidth).toFixed(2),max_.toFixed(2),this.getAttribute("measure"));
-	//if(min_==0) min_=-0.1;
-	var group_ = Interact_createMPRRangeGroup(min_,max_);
 
-	/*for(i=0;i<BarSelected.length-10;i++){
-		if(BarSelected[i]>0) {
-		//	console.log(svg);
-			svg.selectAll('.barselected').style("fill", group_.color);
-		}
-	}*/
+	var group_ = Interact_createMPRRangeGroup(min_,max_);
 	
 	svg.selectAll("rect").classed("barselected",false);
 	
   }
+} else 
+if(cOption.type == 'MED_PERIOD_DIST') {
+	var brush = d3.svg.brush()
+	      .x(x)
+	      .y(y)
+	      .on("brushstart", brushstart_period)
+	      .on("brush", brushmove_period)
+	      .on("brushend", brushend_period);
+		  
+	svg.call(brush);	
+	var BarSelected=[];
+	  var periodData = data_; 
+  	function brushstart_period(p) { 
+ 		BarSelected=[];
+  }
+  // Highlight the selected circles.  
+  
+  function brushmove_period(p) {
+    var e = brush.extent();
+ 	 groupRoot.selectAll("rect").classed("barselected", function(d,i) {
 
+			var defcolor = false;
+			var rect_x=x(d.range)+x.rangeBand()/2;		;
+		
+  		   if( e[0][0] < rect_x && e[1][0] > rect_x  ) {
+			   			  defcolor=true;	 
+		
+				BarSelected[i]=1;  
+		  } else {
+				  BarSelected[i]=0;
+		  }
+          return defcolor;
+		  
+    });
+  }
+  // If the brush is empty, select all circles.
+  function brushend_period() {
+
+	var min_,max_;
+	min_=30000;
+	max_=-1;
+	var mprwidth = periodData[1].range- periodData[0].range;
+	for(i=0;i<BarSelected.length;i++){  //why -10? idk.
+		if(BarSelected[i]>0) {
+			console.log(periodData[i].range);
+			if(periodData[i].range<min_) min_=periodData[i].range;
+			if(periodData[i].range>max_) max_=periodData[i].range;
+			
+		}
+		
+	}
+	max_=max_+ mprwidth;	
+
+	max_=max_.toFixed(0);
+	if(min_ == 1000) return ;	
+
+	var group_ = Interact_createPeriodRangeGroup(min_,max_);
+	
+	svg.selectAll("rect").classed("barselected",false);
+	
+  }
+}
+	  
+  
 function type(d) {
   d.frequency = +d.frequency;
   return d;
@@ -687,7 +739,387 @@ function type(d) {
 }
 
 
+function createLinePointchart(data_o,parentNodeID,flag,chartOption){
+	
+
+	var color = d3.scale.category10().domain(d3.range(0,10));
+	//color.domain([0, 10]);
+
+	var margin = {top: 40, right: 70, bottom: 80, left: 70},
+    width = chartOption.width - margin.left - margin.right,
+    height = chartOption.height - margin.top - margin.bottom;
+	var interpolation_ = "basis";
+	var x_trans;
+	 if(chartOption.type == 'MPR_over_MONTH'){
+		data_=data_o.stats.mpr30;
+		xAttr= 'i';
+		yAttr= 'avg';
+		xLabel = chartOption.xLabel;
+		yLabel = chartOption.yLabel;
+		dataID = data_o.name;
+		color_ = data_o.color;
+		interpolation_ = "linear";
+		var caption = "Temporal Change of instantaneous MPR30 (MPR30 is calculated at each 30-day interval)"
+		 x_trans = d3.scale.linear()
+	    .domain([0, data_.length-1 ])
+	    .range([0, width]);
+	} else if (chartOption.type == 'MPR_SUBGROUP_DIST'){
+		data_=data_o.stats.mpr_subgroup10;
+		xAttr= 'range';
+		yAttr= 'mprvalue';
+		xLabel = chartOption.xLabel;
+		yLabel = chartOption.yLabel;
+		dataID = data_o.name;
+		color_ = data_o.color;		
+		var caption = "MPR Distribution of ranked subgroup  (right->higher MPR sub-group)";
+		interpolation_ = "linear";
+		
+		 x_trans = d3.scale.linear()
+	    .domain([0, 100 ])
+	    .range([0, width]);
+	}
+	
+	else 	return ;
+	
+	
+	
+ 
+	var y_trans = d3.scale.linear()
+	    .domain([0, 1])
+	    .range([height, 0]);
+		
+	
+
+	if(flag=='appendGroup') {
+
+		
+		var svg = d3.select("#"+parentNodeID+"_svg"+" g");
+		
+		var groupRoot = svg.append("g")		
+				.attr("id",parentNodeID+"_svg"+"_group"+data_o.id)
+				.attr("groupID","group"+data_o.id);
+
+	
+ var tip;
+ if(chartOption.type == 'MPR_over_MONTH') {
+		tip= d3.tip()
+		  .attr('class', 'd3-tip')
+		  .offset([-20, 0])
+		  .html(function(d) {
+			 console.log(this);
+			 
+		     return "<strong>Number of patients : </strong> <span style='color:"+data_o.color+"'>"  + d.count + "</span><br/> <strong>CI : </strong> <span style='color:"+data_o.color+"'>"  + "[ " + d.ci_lower.toFixed(3) + ", " +d.ci_upper.toFixed(3) + " ]</span>" + "<br/> <strong>CI len : </strong> <span style='color:"+data_o.color+"'>"  + (d.ci_upper.toFixed(3) - d.ci_lower.toFixed(3)).toFixed(3)+"</span>";
+		  })
+		
+ } else if(chartOption.type == 'MPR_SUBGROUP_DIST'){
+		tip= d3.tip()
+		  .attr('class', 'd3-tip')
+		  .offset([-20, 0])
+		  .html(function(d) {
+			 console.log(this);
+		     return "<strong>MPR :</strong> <span style='color:"+data_o.color+"'>" + d.mprvalue+"</span><br><strong>subgroup(%) :</strong> <span style='color:"+data_o.color+"'>"+ (d.range-5)+"~"+d.range+"</span>";
+		  })
+	}
+ 
+		  
+		  
+ groupRoot.call(tip);		
+
+
+
+
+var line;
+
+	if(chartOption.type == 'MPR_over_MONTH') {
+		line = d3.svg.line()
+  		  .x(function(d, i) { return x_trans(i); })
+		    .y(function(d, i) { return y_trans(d[yAttr]);;})
+	  	.interpolate(interpolation_);
+		
+	} else if(chartOption.type == 'MPR_SUBGROUP_DIST'){
+		line = d3.svg.line()
+ 		   .x(function(d, i) { return x_trans(d[xAttr]); })
+   		 .y(function(d, i) { return y_trans(d[yAttr]);;})
+			.interpolate(interpolation_);
+	}
+
+	
+var group_= groupRoot.append("g")
+	    .attr("clip-path","all");
+var path=	group_.append("path")
+	    .datum(data_)
+	    .attr("d", line)
+		.style("fill", "none")
+		.style("stroke",color_)
+		.style("stroke-width",3);
+	//	.style("visibility", show);	
+var avgLine_d = [[0,Number(data_o.stats.avgMPR)] , [100,Number(data_o.stats.avgMPR)]];
+console.log(avgLine_d);
+var avgline = d3.svg.line()
+	.x(function(d, i) { return x_trans(d[0]); })
+    .y(function(d, i) { return y_trans(d[1]);;})
+	.interpolate(interpolation_);
+	
+var path=	group_.append("path")
+	    .datum(avgLine_d)
+	    .attr("d", avgline)
+		.style("fill", "none")
+		.style("stroke",color_)
+		.style("stroke-width",3)
+		.style("stroke-dasharray", ("3, 3"));	
+		
+group_.append("text")     
+      .attr("y",y_trans(avgLine_d[0][1]))
+	  .attr("x",-8)
+	  .style("fill",color_)
+      .style("text-anchor", "end")	
+	 
+      .text(avgLine_d[0][1]);
+
+
+if(chartOption.type == 'MPR_over_MONTH') {
+		var points = group_.selectAll("dot")
+      .data(data_)
+	  .enter()
+	  .append("circle")	
+      .attr("r", 6)
+      .attr("cx",function(d, i) { return x_trans(i); })
+      .attr("cy",function(d, i) { return y_trans(d[yAttr]); })
+	  .attr("id",function(d,i) { return "dot"+i;})
+      .style("fill", color_)
+	  .on('mouseover', tip.show)
+	  .on('mouseout', tip.hide)
+	  ; 
+		
+	} else if(chartOption.type == 'MPR_SUBGROUP_DIST'){
+	var points = group_.selectAll("dot")
+      .data(data_)
+	  .enter()
+	  .append("circle")	
+      .attr("r", 6)
+      .attr("cx",function(d, i) { return x_trans(d[xAttr]); })
+      .attr("cy",function(d, i) { return y_trans(d[yAttr]); })
+	  .attr("id",function(d,i) { return "dot"+i;})
+      .style("fill", color_)
+	  .on('mouseover', tip.show)
+	  .on('mouseout', tip.hide)
+	  ; 
+	}	 
+
+
+
+			
+		return path;
+		
+		
+	} else {
+	 
+  var parent_ = document.getElementById(parentNodeID);
+  var caption_e = document.createElement("div");  
+  caption_e.innerHTML = caption;
+  caption_e.className="charttitleCSS";
+   if(chartOption.type == 'MPR_over_MONTH'){
+ 		 caption_e.addEventListener("click", function(){
+		  		if(document.getElementById("Chart_Line_MPR_overMONTH_desc").style.visibility != "visible") 	document.getElementById("Chart_Line_MPR_overMONTH_desc").style.visibility="visible";
+					else document.getElementById("Chart_Line_MPR_overMONTH_desc").style.visibility="hidden";
+
+		 });
+   }
+  parent_.appendChild(caption_e);
+  
+	var xAxis, yAxis;
+	if(chartOption.type == 'MPR_over_MONTH') {
+			xAxis= d3.svg.axis()
+  	  .scale(x_trans)
+  	  .orient("bottom")
+		.ticks(data_.length,"d");
+		
+	} else if(chartOption.type == 'MPR_SUBGROUP_DIST'){
+	xAxis= d3.svg.axis()
+    .scale(x_trans)
+    .orient("bottom")
+	.ticks(data_.length)
+	.tickFormat(function(d,i) { 
+	return d+"%"; });
+	}
+
+	yAxis = d3.svg.axis()
+    .scale(y_trans)
+    .orient("left")
+    .ticks(10, "d");
+	
+	var svg = d3.select("#"+parentNodeID).append("svg")
+	    .attr("width", width+ margin.left + margin.right )
+	    .attr("height", height + margin.top + margin.bottom)
+		.attr("id", parentNodeID+"_svg")
+	  .append("g")
+	    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	svg.append("defs").append("clipPath")
+	    .attr("id", "clip")
+	  .append("rect")
+	    .attr("width", width)
+	    .attr("height", height);
+		
+	svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .style("fill","rgb(184, 184, 200)")
+      .call(xAxis)	  
+  	.append("text")     
+      .attr("y",50)
+	  .attr("x",width/2)
+      .style("text-anchor", "middle")	
+	  .style("fill","goldenrod") 
+      .text(xLabel);
+	 
+	svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+	  .style("fill","rgb(184, 184, 200)")
+    .append("text")
+      //.attr("transform", "rotate(-90)")
+      .attr("y",-30)
+	  .attr("x",-20)
+      .attr("dy", ".71em")
+      .style("text-anchor", "start")	
+	  .style("fill","goldenrod") 
+      .text(yLabel); 
+
+ 
+ var groupRoot = svg.append("g")		
+				.attr("id",parentNodeID+"_svg"+"_group"+data_o.id)
+				.attr("groupID","group"+data_o.id);
+
+	
+ var tip;
+ if(chartOption.type == 'MPR_over_MONTH') {
+		tip= d3.tip()
+		  .attr('class', 'd3-tip')
+		  .offset([-20, 0])
+		  .html(function(d) {
+			 console.log(this);
+			 
+		     return "<strong>Number of patients : </strong> <span style='color:"+data_o.color+"'>"  + d.count + "</span><br/> <strong>CI : </strong> <span style='color:"+data_o.color+"'>"  + "[ " + d.ci_lower.toFixed(3) + ", " +d.ci_upper.toFixed(3) + " ]</span>" + "<br/> <strong>CI len : </strong> <span style='color:"+data_o.color+"'>"  + (d.ci_upper.toFixed(3) - d.ci_lower.toFixed(3)).toFixed(3)+"</span>";
+		  })
+		
+ } else if(chartOption.type == 'MPR_SUBGROUP_DIST'){
+		tip= d3.tip()
+		  .attr('class', 'd3-tip')
+		  .offset([-20, 0])
+		  .html(function(d) {
+			 console.log(this);
+		     return "<strong>MPR :</strong> <span style='color:"+data_o.color+"'>" + d.mprvalue+"</span><br><strong>subgroup(%) :</strong> <span style='color:"+data_o.color+"'>"+ (d.range-5)+"~"+d.range+"</span>";
+		  })
+	}
+ 
+		  
+		  
+ groupRoot.call(tip);		
+
+
+
+
+var line;
+
+	if(chartOption.type == 'MPR_over_MONTH') {
+		line = d3.svg.line()
+  		  .x(function(d, i) { return x_trans(i); })
+		    .y(function(d, i) { return y_trans(d[yAttr]);;})
+	  	.interpolate(interpolation_);
+		
+	} else if(chartOption.type == 'MPR_SUBGROUP_DIST'){
+		line = d3.svg.line()
+ 		   .x(function(d, i) { return x_trans(d[xAttr]); })
+   		 .y(function(d, i) { return y_trans(d[yAttr]);;})
+			.interpolate(interpolation_);
+	}
+
+	
+var group_= groupRoot.append("g")
+	    .attr("clip-path","all");
+var path=	group_.append("path")
+	    .datum(data_)
+	    .attr("d", line)
+		.style("fill", "none")
+		.style("stroke",color_)
+		.style("stroke-width",3);
+	//	.style("visibility", show);	
+var avgLine_d = [[0,Number(data_o.stats.avgMPR)] , [100,Number(data_o.stats.avgMPR)]];
+console.log(avgLine_d);
+var avgline = d3.svg.line()
+	.x(function(d, i) { return x_trans(d[0]); })
+    .y(function(d, i) { return y_trans(d[1]);;})
+	.interpolate(interpolation_);
+	
+var path=	group_.append("path")
+	    .datum(avgLine_d)
+	    .attr("d", avgline)
+		.style("fill", "none")
+		.style("stroke",color_)
+		.style("stroke-width",3)
+		.style("stroke-dasharray", ("3, 3"));	
+		
+group_.append("text")     
+      .attr("y",y_trans(avgLine_d[0][1]))
+	  .attr("x",-8)
+	  .style("fill",color_)
+      .style("text-anchor", "end")	
+	 
+      .text(avgLine_d[0][1]);
+
+
+if(chartOption.type == 'MPR_over_MONTH') {
+		var points = group_.selectAll("dot")
+      .data(data_)
+	  .enter()
+	  .append("circle")	
+      .attr("r", 6)
+      .attr("cx",function(d, i) { return x_trans(i); })
+      .attr("cy",function(d, i) { return y_trans(d[yAttr]); })
+	  .attr("id",function(d,i) { return "dot"+i;})
+      .style("fill", color_)
+	  .on('mouseover', tip.show)
+	  .on('mouseout', tip.hide)
+	  ; 
+		
+	} else if(chartOption.type == 'MPR_SUBGROUP_DIST'){
+	var points = group_.selectAll("dot")
+      .data(data_)
+	  .enter()
+	  .append("circle")	
+      .attr("r", 6)
+      .attr("cx",function(d, i) { return x_trans(d[xAttr]); })
+      .attr("cy",function(d, i) { return y_trans(d[yAttr]); })
+	  .attr("id",function(d,i) { return "dot"+i;})
+      .style("fill", color_)
+	  .on('mouseover', tip.show)
+	  .on('mouseout', tip.hide)
+	  ; 
+	}	 
+
+
+
+	  
+	return path;
+
+}
+
+ 
+}
 /*****line chart ******/
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function createLinechart(data_o,parentNodeID,flag,chartOption){
 	
@@ -698,7 +1130,7 @@ function createLinechart(data_o,parentNodeID,flag,chartOption){
 	var margin = {top: 40, right: 70, bottom: 80, left: 70},
     width = chartOption.width - margin.left - margin.right,
     height = chartOption.height - margin.top - margin.bottom;
-
+	var interpolation_ = "basis";
 	
 	 if(chartOption.type == 'MPR_over_MONTH'){
 		data_=data_o.stats.mpr30;
@@ -708,8 +1140,20 @@ function createLinechart(data_o,parentNodeID,flag,chartOption){
 		yLabel = chartOption.yLabel;
 		dataID = data_o.name;
 		color_ = data_o.color;
-		
-	} else 	return ;
+		var caption = "Temporal Change of instantaneous MPR30 (MPR30 is calculated at each 30-day interval)"
+	} else if (chartOption.type == 'MPR_SUBGROUP_DIST'){
+		data_=data_o.stats.mpr_subgroup10;
+		xAttr= 'range';
+		yAttr= 'mprvalue';
+		xLabel = chartOption.xLabel;
+		yLabel = chartOption.yLabel;
+		dataID = data_o.name;
+		color_ = data_o.color;		
+		var caption = "MPR Distribution of Subdivided Group  (Patients are ranked by MPR)";
+		interpolation_ = "linear";
+	}
+	
+	else 	return ;
 	
 	
 	
@@ -737,7 +1181,7 @@ function createLinechart(data_o,parentNodeID,flag,chartOption){
 		var line = d3.svg.line()
  		   .x(function(d, i) { return x_trans(i); })
 		    .y(function(d, i) { return y_trans(d[yAttr]);;})
-			.interpolate("basis");
+			.interpolate(interpolation_);
 
 		var path = svg.append("g")
 		    .attr("clip-path",data_o.id)
@@ -756,15 +1200,16 @@ function createLinechart(data_o,parentNodeID,flag,chartOption){
 	} else {
 	 
   var parent_ = document.getElementById(parentNodeID);
-  var caption_e = document.createElement("div");
-  var caption = "Temporal Change of instantaneous MPR30 (MPR30 is calculated at each 30-day interval)"
+  var caption_e = document.createElement("div");  
   caption_e.innerHTML = caption;
   caption_e.className="charttitleCSS";
-  caption_e.addEventListener("click", function(){
-	  		if(document.getElementById("Chart_Line_MPR_overMONTH_desc").style.visibility != "visible") 	document.getElementById("Chart_Line_MPR_overMONTH_desc").style.visibility="visible";
-				else document.getElementById("Chart_Line_MPR_overMONTH_desc").style.visibility="hidden";
+   if(chartOption.type == 'MPR_over_MONTH'){
+ 		 caption_e.addEventListener("click", function(){
+		  		if(document.getElementById("Chart_Line_MPR_overMONTH_desc").style.visibility != "visible") 	document.getElementById("Chart_Line_MPR_overMONTH_desc").style.visibility="visible";
+					else document.getElementById("Chart_Line_MPR_overMONTH_desc").style.visibility="hidden";
 
-	 });
+		 });
+   }
   parent_.appendChild(caption_e);
 	
 	var svg = d3.select("#"+parentNodeID).append("svg")
@@ -811,7 +1256,7 @@ hData = data_;
 var line = d3.svg.line()
     .x(function(d, i) { return x_trans(i); })
     .y(function(d, i) { return y_trans(d[yAttr]);;})
-	.interpolate("basis");
+	.interpolate(interpolation_);
 	
 var group_= svg.append("g")
 	    .attr("clip-path","all");
@@ -882,22 +1327,6 @@ var y_trans_under = d3.scale.linear()
   }
 
 
-/*group_.selectAll(".bar")
-      .data(data_)
-    .enter().append("rect")
-      .attr("x", function(d,i) { return x_trans(i); }) 
-      .attr("width", (x_trans(1)-x_trans(0))-1)
-      .attr("y", function(d,i) { return  height-y_trans_under(d.count); } )
-      .attr("height", function(d) {   return y_trans_under(d.count); })
-	  .style("fill",color_)
-	  	;
-
-group_.append("text")     
-      .attr("y",height*0.66)
-	  .attr("x",width*0.8)
-      .style("text-anchor", "middle")	
-	  .style("fill","goldenrod") 
-      .text("Population for Monthly MPR");	*/
 	  
 	return path;
 

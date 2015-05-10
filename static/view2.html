@@ -51,40 +51,32 @@ var __adobewebfontsappname__="dreamweaver"
 
   <div class="container-fluid">
 	<div class="row">
-		<div class="col-md-3" id="leftcontrol">
+		<div class="col-md-3" id="leftcontrol" >
 			<div class="panel panel-default">
 				<div class="panel-heading"> Quick Start</div>
 				<div class="panel-body">
-					
+					This automatically groups the patients according to their dominant prescription drugID, gender, and age.                    
+                    <br>
+                    <hr>
 					<button type="button" class="btn btn-default btn-lg" onClick="Quick_createGroupByDrug();">
 						  <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>  Drug Analysis
-                    </button>
-                    <br><br>
-                    This automatically groups the patients according to their dominant prescription drugID.
-                    <br>
+                    </button>                    
 
-                    <hr>
-                    
 					<button type="button" class="btn btn-default btn-lg" onClick="Quick_createGroupByGender();">
 						  <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>  Gender Analysis
-                    </button>
-                    <br><br>
-                    This automatically groups the patients according to their gender.
-                    <br><hr>		
-                    
+                    </button>                    
                     <button type="button" class="btn btn-default btn-lg" onClick="Quick_createGroupByAge();">
 						  <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>  Age Analysis
                     </button>
-                    <br><br>
-                    This automatically groups the patients according to their age.
-                    <br><hr>		
+                   
+                   		
 					
 					
 				</div>
 			</div>
-			<div class="panel panel-default">
-				<div class="panel-heading"> Data Smoothing</div>
-				<div class="panel-body"> 
+			<div class="panel panel-default" >
+				<div class="panel-heading" > Data Smoothing</div>
+				<div class="panel-body" > 
 					<form method="post">
 						<fieldset>
 							<legend><b>Smooth Gaps</b></legend>
@@ -130,7 +122,7 @@ var __adobewebfontsappname__="dreamweaver"
                 </div>
                 </div>
             <div class="panel-heading" style="visibility:hidden;"> Data Filtering</div>
-				<div class="panel-body">
+				<div class="panel-body" style="visibility:hidden;">
                 	
                 
 					<form method="post">
@@ -165,7 +157,7 @@ var __adobewebfontsappname__="dreamweaver"
 				<div class="panel-heading" id="middleHeading">Chart View</div>
 			</div>
 		</div>
-		<div class="col-md-3 " id="rightcontrol">
+		<div class="col-md-3 " id="rightcontrol" >
 			<div class="panel panel-default">
 				<div class="panel-heading" > 
                 
@@ -182,7 +174,7 @@ var __adobewebfontsappname__="dreamweaver"
 	</div>
 
   <script>
-  var w_view
+  var w_view=0;
   var g_rawdata;
   var g_data;
  // var g_colorPal = d3.scale.category10().domain(d3.range(0,10));
@@ -195,8 +187,8 @@ $.getJSON('/data', function(data) {
   });
   
 function g_colorPal(index) {
-	var colorPan = ["#66c2a5" , "#fc8d62", "#8da0cb" , "#fb8072" , "#80b1d3" , "#fdb462"];
-	if(index>=6) index=6;
+	var colorPan = ["#1b9e77", "#d95f02" , "#7570b3", "#1f78b4" , "#fdb462" , "#e9a3c9", "#a1d76a","#ffffbf"];
+	if(index>=8) index=8;
 	return colorPan[index-1];
 }
 function createPatientGroup(name_,color_)
@@ -241,7 +233,7 @@ function constructInitData(data,conditionName,conditionValue) {
 
    var Nrange=20;  //MPR range count
    var maxPeriod = 900;
-   var maxGaps_Overlaps = 40;
+   var maxGaps_Overlaps = 20;
   for (i=0;i<=Nrange;i++){
     data.stats.mprRange[i]={range : i/Nrange , count : 0};
      data.stats.csaRange[i]={range : i/Nrange , count : 0};
@@ -316,13 +308,20 @@ function constructInitData(data,conditionName,conditionValue) {
 		data.stats.periodRange[ival].count++;
 		
 		//# of gaps
-		ival = (p.drug_details[drugIndex].num_gaps/maxGaps_Overlaps * Nrange) | 0;
+		var months_6 = Math.ceil(p.drug_details[drugIndex].total_period/180);
+		var normal_gap = p.drug_details[drugIndex].num_gaps / months_6;
+	
+		ival = Math.ceil((normal_gap* Nrange/maxGaps_Overlaps ));
 		if(ival>=Nrange) ival = Nrange-1;		
 		data.stats.gapRange[ival].count++;
+		if(normal_gap ==0) {
+			console.log(ival);
+		}
 		
 		
 		//# of gaps
-		ival = (p.drug_details[drugIndex].num_overlaps/maxGaps_Overlaps * Nrange) | 0;
+		var normal_overlap = p.drug_details[drugIndex].num_overlaps / months_6;
+		ival = Math.ceil((normal_overlap * Nrange/maxGaps_Overlaps) );
 		if(ival>=Nrange) ival = Nrange-1;		
 		data.stats.overlapRange[ival].count++;
 		

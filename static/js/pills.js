@@ -338,7 +338,7 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 	 width = cOption.width - margin.left - margin.right,
     height = cOption.height - margin.top - margin.bottom;
 	var caption = "";
-
+	var b_histogram=true;
 	if(cOption.type == 'MPR_DIST') {
 		
 		data_=data_o.stats.mprRange;
@@ -380,8 +380,8 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 		yAttr= 'count';
 		xLabel = cOption.xLabel;
 		yLabel = cOption.yLabel;
-		caption = "Distribution of Gaps (The total number of overlaps is of each patient)";
-		
+		caption = "Distribution of Gaps (The number of gaps in 6 months)";
+		b_histogram = false;
 	} else if(cOption.type == 'OVERLAP_DIST'){
 		
 		data_=data_o.stats.overlapRange;
@@ -389,8 +389,8 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 		yAttr= 'count';
 		xLabel = cOption.xLabel;
 		yLabel = cOption.yLabel;
-		caption = "Distribution of Overlaps (The total number of gaps is of each patient)";
-		
+		caption = "Distribution of Overlaps (The number of overlaps in 6 months)";
+		b_histogram = false;
 	} else 	return ;
 
 
@@ -479,6 +479,7 @@ var yAxis = d3.svg.axis()
 				}
 			}
 
+			
 						
 		  	svg = d3.select("#"+parentNodeID+"_svg"+" g");
 
@@ -502,7 +503,7 @@ var yAxis = d3.svg.axis()
 		    //  .attr("x", function(d) { return (x(d[xAttr])).toFixed(0);+(parseInt(data_o.id)-2)*x.rangeBand()/2; })
 			  .attr("x", function(d) { 
 			  		var t= parseInt(x(d[xAttr]));
-					t=t+x.rangeBand()/2;
+					if(b_histogram) t=t+x.rangeBand()/2;
 					return t;
 				 })
 		      .attr("id", function(d) { return "bar"+d[xAttr]; })
@@ -591,7 +592,7 @@ var tip = d3.tip()
       .attr("class", "bardefault")
       .attr("x", function(d) { 
 			var t= (x(d[xAttr])).toFixed(0);							
-			t=parseInt(t)+x.rangeBand()/2;						
+			if(b_histogram) t=parseInt(t)+x.rangeBand()/2;						
 		  return t; }
 	  )
       .attr("id", function(d) { return "bar"+d[xAttr]; })

@@ -609,5 +609,5 @@ def mergeFilesByRandom(fileList, medLenFileName='data/medLen.txt', mergedFileNam
 #getMedicationLength(['data/AceOnly.txt', 'data/BetaOnly.txt', 'data/DiurOnly.txt'])
 #mergeFilesByDate(fileList=['data/AceOnly.txt', 'data/BetaOnly.txt', 'data/DiurOnly.txt'], startDate=date(2008, 11, 1), endDate=date(2008, 12, 31))
 #process('data/Ace_Beta_Diur_3SamplingRate.txt', drugList=['1', '3', '5'], overlap=0, gap=0)
-process('data/fake.txt', drugList=['1', '3', '5'], overlap=0, gap=0)
+#process('data/fake.txt', drugList=['1', '3', '5'], overlap=0, gap=0)
 

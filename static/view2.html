@@ -341,10 +341,15 @@ function constructInitData(data,conditionName,conditionValue) {
   
   }	
 	data.patientCount = numPatient;
+
 	for(j =0; j<data.stats.mpr30.length;j++)
 	{
 				data.stats.mpr30[j].avg = data.stats.mpr30[j].value / data.stats.mpr30[j].count;
-
+				var baseSize = data.stats.mpr30[0].count;
+				var thisSize = 10 * data.stats.mpr30[j].count / baseSize;
+				if(thisSize <4) thisSize =4;
+				data.stats.mpr30[j].csize = thisSize;
+				
                 sdev = standardDeviation(data.stats.mpr30[j].vals);
                 serror = sdev/Math.sqrt(data.stats.mpr30[j].count);
 

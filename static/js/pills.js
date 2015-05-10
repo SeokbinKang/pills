@@ -745,7 +745,7 @@ function createLinePointchart(data_o,parentNodeID,flag,chartOption){
 
 	var color = d3.scale.category10().domain(d3.range(0,10));
 	//color.domain([0, 10]);
-
+	var rangeN = 20;
 	var margin = {top: 40, right: 70, bottom: 80, left: 70},
     width = chartOption.width - margin.left - margin.right,
     height = chartOption.height - margin.top - margin.bottom;
@@ -762,7 +762,7 @@ function createLinePointchart(data_o,parentNodeID,flag,chartOption){
 		interpolation_ = "linear";
 		var caption = "Temporal Change of instantaneous MPR30 (MPR30 is calculated at each 30-day interval)"
 		 x_trans = d3.scale.linear()
-	    .domain([0, data_.length-1 ])
+	    .domain([0, 20 ])
 	    .range([0, width]);
 	} else if (chartOption.type == 'MPR_SUBGROUP_DIST'){
 		data_=data_o.stats.mpr_subgroup10;
@@ -907,10 +907,8 @@ if(chartOption.type == 'MPR_over_MONTH') {
 	  ; 
 	}	 
 
-
-
-			
-		return path;
+		
+		return group_;
 		
 		
 	} else {

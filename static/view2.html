@@ -328,14 +328,14 @@ function constructInitData(data,conditionName,conditionValue) {
 		
 		//mpr30
 		
-		for(mpr30index =0; mpr30index < p.drug_details[drugIndex].mpr_30.length-1 && mpr30index<30;mpr30index++)
+		for(mpr30index =0; mpr30index < p.drug_details[drugIndex].mpr_30.length && mpr30index<30;mpr30index++)
 		{
 			if(data.stats.mpr30[mpr30index] == undefined) {
 				data.stats.mpr30[mpr30index] = {count : 0 , value : 0 , avg:0, ci_lower: 0, ci_upper: 1, vals: new Array() };
 			} 
 			data.stats.mpr30[mpr30index].count++;
 			data.stats.mpr30[mpr30index].value +=  p.drug_details[drugIndex].mpr_30[mpr30index];
-                        data.stats.mpr30[mpr30index].vals.push(p.drug_details[drugIndex].mpr_30[mpr30index]);
+            data.stats.mpr30[mpr30index].vals.push(p.drug_details[drugIndex].mpr_30[mpr30index]);
 			
 		}		
   
@@ -343,7 +343,7 @@ function constructInitData(data,conditionName,conditionValue) {
 	data.patientCount = numPatient;
 	for(j =0; j<data.stats.mpr30.length;j++)
 	{
-		data.stats.mpr30[j].avg = data.stats.mpr30[j].value / data.stats.mpr30[j].count;
+				data.stats.mpr30[j].avg = data.stats.mpr30[j].value / data.stats.mpr30[j].count;
 
                 sdev = standardDeviation(data.stats.mpr30[j].vals);
                 serror = sdev/Math.sqrt(data.stats.mpr30[j].count);

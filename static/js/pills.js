@@ -111,6 +111,7 @@ function Interact_createMPRRangeGroup(mprmin,mprmax){
 	return new_group;
 }
 function Quick_createGroupByAge() {
+	UI_ResetGroup();
 	var ageRange = [ {min:0 , max:20}, {min:21,max:40},{min:41,max:60}];
 	
 	for(var i=0;i<ageRange.length;i++)
@@ -133,6 +134,7 @@ function Quick_createGroupByAge() {
 	
 }
 function Quick_createGroupByGender() {
+	UI_ResetGroup();
 	var genderL = ["male","female"];
 	var idx=0;
 	for(var gen in genderL){		
@@ -154,6 +156,7 @@ function Quick_createGroupByGender() {
 	}
 }
 function Quick_createGroupByDrug() {
+	UI_ResetGroup();
 	//create comprehensive groups with different drugs. ( dual/triple Therapy is not considered)
 
 	var drugNameList =[];

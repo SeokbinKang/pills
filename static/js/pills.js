@@ -885,6 +885,8 @@ group_.append("text")
 	  .attr("x",-8)
 	  .style("fill",color_)
       .style("text-anchor", "end")	
+    .style("font-size","20px")
+	  .style("font-weight","bold")
 	 
       .text(avgLine_d[0][1]);
 
@@ -1071,6 +1073,8 @@ var path=	group_.append("path")
 group_.append("text")     
       .attr("y",y_trans(avgLine_d[0][1])+5)
 	  .attr("x",-8)
+	  .style("font-size","20px")
+	  .style("font-weight","bold")
 	  .style("fill","#3E3E3E")
       .style("text-anchor", "end")		 
       .text(avgLine_d[0][1]);

@@ -772,7 +772,7 @@ function createLinePointchart(data_o,parentNodeID,flag,chartOption){
 //		var caption = "Temporal Change of instantaneous MPR30 (MPR30 is calculated at each 30-day interval)"
 		var caption = "Temporal Change of instantaneous MPR30 "
 		 x_trans = d3.scale.linear()
-	    .domain([0, 20 ])
+	    .domain([0, 30 ])
 	    .range([0, width]);
 	} else if (chartOption.type == 'MPR_SUBGROUP_DIST'){
 		data_=data_o.stats.mpr_subgroup10;

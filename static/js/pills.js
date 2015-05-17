@@ -342,6 +342,7 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
     height = cOption.height - margin.top - margin.bottom;
 	var caption = "";
 	var b_histogram=true;
+	var color_ = cOption.color;
 	if(cOption.type == 'MPR_DIST') {
 		
 		data_=data_o.stats.mprRange;
@@ -880,7 +881,7 @@ var path=	group_.append("path")
 		.style("stroke-dasharray", ("3, 3"));	
 		
 group_.append("text")     
-      .attr("y",y_trans(avgLine_d[0][1]))
+      .attr("y",y_trans(avgLine_d[0][1])+5)
 	  .attr("x",-8)
 	  .style("fill",color_)
       .style("text-anchor", "end")	
@@ -984,7 +985,6 @@ if(chartOption.type == 'MPR_over_MONTH') {
 	svg.append("g")
       .attr("class", "yaxis")
       .call(yAxis)
-	  .style("fill","rgb(184, 184, 200)")
     .append("text")
       //.attr("transform", "rotate(-90)")
       .attr("y",-30)
@@ -1069,11 +1069,10 @@ var path=	group_.append("path")
 		.style("stroke-dasharray", ("3, 3"));	
 		
 group_.append("text")     
-      .attr("y",y_trans(avgLine_d[0][1]))
+      .attr("y",y_trans(avgLine_d[0][1])+5)
 	  .attr("x",-8)
-	  .style("fill",color_)
-      .style("text-anchor", "end")	
-	 
+	  .style("fill","#3E3E3E")
+      .style("text-anchor", "end")		 
       .text(avgLine_d[0][1]);
 
 

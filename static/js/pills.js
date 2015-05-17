@@ -247,7 +247,7 @@ function updateAllChart(new_group){
 		 div_child.style.width = (parseInt(size)+"%");
 	 }
 //	 div_child.innerHTML = "-";
-	div_child.style.height = "30px";
+    div_child.style.height = "30px";
 	 div_.innerHTML = groupname+"&#09;";
 	 div_child.style.background=color;
 	 var viewicon = document.createElement('span');
@@ -349,7 +349,8 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 		yAttr= 'count';
 		xLabel = cOption.xLabel;
 		yLabel = cOption.yLabel;
-		caption = "Distribution of MPR Values (MPR value calculated for each patient)";
+//		caption = "Distribution of MPR Values (MPR value calculated for each patient)";
+		caption = "Distribution of MPR Values";
 			
 	} else if(cOption.type == 'CSA_DIST'){
 		
@@ -374,7 +375,8 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 		yAttr= 'count';
 		xLabel = cOption.xLabel;
 		yLabel = cOption.yLabel;
-		caption = "Distribution of Total Medication Lifetime (Total Medication Lifetime is of each patient)";
+		caption = "Distribution of Total Medication Lifetime";
+//				caption = "Distribution of Total Medication Lifetime (Total Medication Lifetime is of each patient)";
 		
 	} else if(cOption.type == 'GAP_DIST'){
 		
@@ -383,7 +385,8 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 		yAttr= 'count';
 		xLabel = cOption.xLabel;
 		yLabel = cOption.yLabel;
-		caption = "Distribution of Gaps (The number of gaps in 6 months)";
+		caption = "Distribution of Prescrption Gaps";
+//				caption = "Distribution of Gaps (The number of gaps in 6 months)";
 		b_histogram = false;
 	} else if(cOption.type == 'OVERLAP_DIST'){
 		
@@ -392,7 +395,8 @@ function createbarChart(data_o,parentNodeID,flag, cOption) {
 		yAttr= 'count';
 		xLabel = cOption.xLabel;
 		yLabel = cOption.yLabel;
-		caption = "Distribution of Overlaps (The number of overlaps in 6 months)";
+		caption = "Distribution of Prescription Overlaps";
+//				caption = "Distribution of Prescription Overlaps (The number of overlaps in 6 months)";
 		b_histogram = false;
 	} else 	return ;
 
@@ -552,28 +556,29 @@ var maxFrequency=0;
   	
 
 svg.append("g")
-      .attr("class", "x axis")
+      .attr("class", "xaxis")
       .attr("transform", "translate(0," + height + ")")
-      .style("fill","rgb(184, 184, 200)")
+
       .call(xAxis)
   .append("text")     
       .attr("y",60)
 	  .attr("x",width/2)
       .style("text-anchor", "middle")	
-	  .style("fill","goldenrod") 
+//	  .style("fill","black")
+	  .attr("class","chart_label")
       .text(xLabel);
 
   svg.append("g")
-      .attr("class", "y axis")
+      .attr("class", "yaxis")
       .call(yAxis)
-	  .style("fill","rgb(184, 184, 200)")
+
     .append("text")
       //.attr("transform", "rotate(-90)")
       .attr("y",-30)
 	  .attr("x",-40)
       .attr("dy", ".71em")
       .style("text-anchor", "start")	
-	  .style("fill","goldenrod") 
+	  .attr("class","chart_label")
       .text(yLabel);
 	  
 	  
@@ -763,7 +768,8 @@ function createLinePointchart(data_o,parentNodeID,flag,chartOption){
 		dataID = data_o.name;
 		color_ = data_o.color;
 		interpolation_ = "linear";
-		var caption = "Temporal Change of instantaneous MPR30 (MPR30 is calculated at each 30-day interval)"
+//		var caption = "Temporal Change of instantaneous MPR30 (MPR30 is calculated at each 30-day interval)"
+		var caption = "Temporal Change of instantaneous MPR30 "
 		 x_trans = d3.scale.linear()
 	    .domain([0, 20 ])
 	    .range([0, width]);
@@ -775,7 +781,8 @@ function createLinePointchart(data_o,parentNodeID,flag,chartOption){
 		yLabel = chartOption.yLabel;
 		dataID = data_o.name;
 		color_ = data_o.color;		
-		var caption = "MPR Distribution of ranked subgroup  (right->higher MPR sub-group)";
+//		var caption = "MPR Distribution of ranked subgroup  (right->higher MPR sub-group)";
+		var caption = "MPR Distribution of ranked subgroup";
 		interpolation_ = "linear";
 		
 		 x_trans = d3.scale.linear()
@@ -963,19 +970,19 @@ if(chartOption.type == 'MPR_over_MONTH') {
 	    .attr("height", height);
 		
 	svg.append("g")
-      .attr("class", "x axis")
+      .attr("class", "xaxis")
       .attr("transform", "translate(0," + height + ")")
-      .style("fill","rgb(184, 184, 200)")
+     // .style("fill","rgb(184, 184, 200)")
       .call(xAxis)	  
   	.append("text")     
       .attr("y",50)
 	  .attr("x",width/2)
       .style("text-anchor", "middle")	
-	  .style("fill","goldenrod") 
+	   .attr("class","chart_label")
       .text(xLabel);
 	 
 	svg.append("g")
-      .attr("class", "y axis")
+      .attr("class", "yaxis")
       .call(yAxis)
 	  .style("fill","rgb(184, 184, 200)")
     .append("text")
@@ -984,7 +991,7 @@ if(chartOption.type == 'MPR_over_MONTH') {
 	  .attr("x",-20)
       .attr("dy", ".71em")
       .style("text-anchor", "start")	
-	  .style("fill","goldenrod") 
+	    .attr("class","chart_label")
       .text(yLabel); 
 
  
@@ -1142,7 +1149,8 @@ function createLinechart(data_o,parentNodeID,flag,chartOption){
 		yLabel = chartOption.yLabel;
 		dataID = data_o.name;
 		color_ = data_o.color;
-		var caption = "Temporal Change of instantaneous MPR30 (MPR30 is calculated at each 30-day interval)"
+		var caption = "Temporal Change of instantaneous MPR30"
+//				var caption = "Temporal Change of instantaneous MPR30 (MPR30 is calculated at each 30-day interval)"
 	} else if (chartOption.type == 'MPR_SUBGROUP_DIST'){
 		data_=data_o.stats.mpr_subgroup10;
 		xAttr= 'range';
@@ -1151,7 +1159,8 @@ function createLinechart(data_o,parentNodeID,flag,chartOption){
 		yLabel = chartOption.yLabel;
 		dataID = data_o.name;
 		color_ = data_o.color;		
-		var caption = "MPR Distribution of Subdivided Group  (Patients are ranked by MPR)";
+		var caption = "MPR Distribution of Subdivided Group";
+//				var caption = "MPR Distribution of Subdivided Group  (Patients are ranked by MPR)";
 		interpolation_ = "linear";
 	}
 	
@@ -1228,28 +1237,28 @@ function createLinechart(data_o,parentNodeID,flag,chartOption){
 	    .attr("height", height);
 		
 	svg.append("g")
-      .attr("class", "x axis")
+      .attr("class", "xaxis")
       .attr("transform", "translate(0," + height + ")")
-      .style("fill","rgb(184, 184, 200)")
+
       .call(xAxis)
   .append("text")     
       .attr("y",50)
 	  .attr("x",width/2)
       .style("text-anchor", "middle")	
-	  .style("fill","goldenrod") 
+	  .style("fill","black") 
       .text(xLabel);
 	 
 	svg.append("g")
-      .attr("class", "y axis")
+      .attr("class", "yaxis")
       .call(yAxis)
-	  .style("fill","rgb(184, 184, 200)")
+
     .append("text")
       //.attr("transform", "rotate(-90)")
       .attr("y",-30)
 	  .attr("x",-20)
       .attr("dy", ".71em")
       .style("text-anchor", "start")	
-	  .style("fill","goldenrod") 
+	  .style("fill","black") 
       .text(yLabel); 
 
 hData = data_;
@@ -1445,28 +1454,27 @@ function createScatterchart(data_o,parentNodeID,flag,chartOption){
 	    .attr("height", height);
 		
 	svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .style("fill","rgb(184, 184, 200)")
+      .attr("class", "xaxis")
+      .attr("transform", "translate(0," + height + ")")     
       .call(xAxis)
   .append("text")     
       .attr("y",60)
 	  .attr("x",width/2-100)
       .style("text-anchor", "center")	
-	  .style("fill","goldenrod") 
+	   .attr("class","chart_label")
       .text(xLabel);
 	 
 	svg.append("g")
-      .attr("class", "y axis")
+      .attr("class", "yaxis")
       .call(yAxis)
-	  .style("fill","rgb(184, 184, 200)")
+	 
     .append("text")
       //.attr("transform", "rotate(-90)")
       .attr("y",-30)
 	  .attr("x",0)
       .attr("dy", ".71em")
       .style("text-anchor", "start")	
-	  .style("fill","goldenrod") 
+	    .attr("class","chart_label")
       .text(yLabel); 
 	
 var tip = d3.tip()

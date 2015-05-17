@@ -37,10 +37,10 @@
 }
 .GroupNameCSS {
 	height: Auto;
-	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-family: carter-one;
 	font-style: normal;
-	font-weight: 400;
-	font-size: 20px;
+	font-weight: bold;
+	font-size: 32px;
 	text-align: left;
 }
 * {
@@ -69,6 +69,7 @@ input[type="checkbox"] {
   stroke: #838383;
 }
 
+
 .chart-tooltip {
   line-height: 1.5;
   visibility: hidden;
@@ -85,15 +86,30 @@ input[type="checkbox"] {
 }
 
 .charttitleCSS {
-	color: #333333;
+	color: #1F1F1F;
 	background-color: #DDDDDD;
 	font-family: carter-one;
 	font-style: normal;
-	font-weight: 400;
-	font-size: 20px;
+	font-weight: bold;
+	font-size: 28px;
 	text-align: center;
 	padding-top: 5px;
 	padding-bottom: 5px;
+	margin-bottom: 12px;
 }
 
 .charttitleCSS:hover{ cursor:pointer}
+
+.chart_label {
+	fill :  #333333;
+	color: #333333;
+	font-size: 26px;
+	font-weight: bold;
+}
+
+.xaxis {
+	fill : #666666;
+}
+.yaxis {
+	fill : #666666;
+}
